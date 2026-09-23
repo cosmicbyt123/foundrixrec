@@ -23,7 +23,7 @@ export const ScheduleSection = () => {
 
         {/* Tab Switcher */}
         <div
-          className="reveal-on-scroll"
+          className="reveal-on-scroll schedule-tabs-wrapper"
           style={{
             display: 'flex',
             alignItems: 'center',

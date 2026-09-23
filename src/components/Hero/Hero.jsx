@@ -88,18 +88,19 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
         </div>
 
         {/* Monumental Bebas Neue Condensed Headline */}
-        <div className="reveal-on-scroll" style={{ marginBottom: '24px', transitionDelay: '80ms' }}>
+        <div className="reveal-on-scroll" style={{ marginBottom: '20px', transitionDelay: '80ms', width: '100%' }}>
           <h1
             style={{
               fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(3.8rem, 12vw, 8.8rem)',
+              fontSize: 'clamp(2.5rem, 11vw, 8.8rem)',
               fontWeight: '900',
-              lineHeight: '0.86',
+              lineHeight: '0.88',
               letterSpacing: '0.01em',
               color: '#ffffff',
               textTransform: 'uppercase',
               textShadow: '0 8px 40px rgba(0, 0, 0, 0.95), 0 0 70px rgba(20, 110, 245, 0.45)',
               margin: 0,
+              wordBreak: 'break-word',
             }}
           >
             FOUNDRIX 2026:
@@ -108,14 +109,15 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
           <div
             style={{
               fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(3.4rem, 11vw, 8.4rem)',
+              fontSize: 'clamp(2.2rem, 10vw, 8.4rem)',
               fontWeight: '900',
-              lineHeight: '0.88',
+              lineHeight: '0.9',
               letterSpacing: '0.02em',
               color: '#ffffff',
               textTransform: 'uppercase',
               textShadow: '0 8px 40px rgba(0, 0, 0, 0.95), 0 0 70px rgba(0, 240, 255, 0.45)',
               marginTop: '4px',
+              wordBreak: 'break-word',
             }}
           >
             THE TECH SUMMIT
@@ -181,7 +183,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
 
         {/* Radiant Electric Blue Button + Team Hub Button */}
         <div
-          className="reveal-on-scroll"
+          className="reveal-on-scroll hero-cta-group"
           style={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -190,6 +192,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
             gap: '16px',
             marginBottom: '15px',
             transitionDelay: '240ms',
+            width: '100%',
           }}
         >
           {/* Concept Glowing Radiant Blue GET TICKETS Button */}
@@ -292,7 +295,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
             gap: '16px',
           }}
         >

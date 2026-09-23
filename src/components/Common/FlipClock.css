@@ -276,3 +276,85 @@
 .flip-unit:last-child .flip-bottom-label {
   color: var(--accent-cyan);
 }
+
+/* ==========================================================================
+   Mobile & Small Screen Optimizations (<480px & <360px)
+   Prevents horizontal overflow and scales split-flap cards proportionally
+   ========================================================================== */
+@media (max-width: 480px) {
+  .flip-clock-wrapper {
+    margin: 8px auto 20px auto;
+  }
+
+  .flip-clock-header {
+    padding: 4px 12px;
+    margin-bottom: 10px;
+  }
+
+  .flip-clock-header span {
+    font-size: 0.68rem !important;
+  }
+
+  .flip-clock-container {
+    gap: clamp(5px, 1.6vw, 10px);
+  }
+
+  .flip-card-box {
+    width: clamp(52px, 19vw, 68px);
+    height: clamp(62px, 22vw, 80px);
+    border-radius: 9px;
+  }
+
+  .flip-card-half span {
+    font-size: clamp(2.2rem, 8.5vw, 3rem);
+  }
+
+  .flip-corner-tag {
+    font-size: 0.52rem;
+    top: 4px;
+    left: 6px;
+  }
+
+  .flip-bottom-label {
+    font-size: 0.56rem;
+    letter-spacing: 0.06em;
+    margin-top: 5px;
+  }
+
+  .flip-separator {
+    gap: 8px;
+    padding: 0;
+  }
+
+  .flip-separator-dot {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+@media (max-width: 360px) {
+  .flip-clock-container {
+    gap: 4px;
+  }
+
+  .flip-card-box {
+    width: 48px;
+    height: 58px;
+    border-radius: 7px;
+  }
+
+  .flip-card-half span {
+    font-size: 1.95rem;
+  }
+
+  .flip-corner-tag {
+    font-size: 0.46rem;
+    top: 3px;
+    left: 4px;
+  }
+
+  .flip-bottom-label {
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+}

@@ -521,7 +521,7 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
         {/* STEP 1: STUDENT DETAILS */}
         {!existingPass && step === 1 && (
           <form onSubmit={handleProceedToPayment}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '16px', marginBottom: '20px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
                   Full Name *

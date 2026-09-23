@@ -25,10 +25,18 @@ export const CustomCursor = () => {
   const trailPoints = useRef([]);
   const sparks = useRef([]);
   const lastMousePos = useRef({ x: -100, y: -100 });
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
-    // Only enable on desktop/laptops with precise mouse pointer
-    if (typeof window === 'undefined' || !window.matchMedia('(pointer: fine)').matches) {
+    // Completely disable on mobile and touch devices to conserve battery and CPU
+    if (
+      typeof window === 'undefined' ||
+      !window.matchMedia('(pointer: fine)').matches ||
+      window.matchMedia('(pointer: coarse)').matches ||
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0
+    ) {
+      setIsTouchDevice(true);
       return;
     }
 
@@ -213,7 +221,7 @@ export const CustomCursor = () => {
   }, [visible]);
 
   // Don't render on touch-only devices
-  if (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches) {
+  if (isTouchDevice || (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches)) {
     return null;
   }
 
