@@ -1,0 +1,278 @@
+/* ==========================================================================
+   FOUNDRIX 2026 — 3D Mechanical Split-Flap / Flip Clock Countdown
+   Inspired by classic Solari split-flap boards & luxury dark flip clocks
+   ========================================================================== */
+
+.flip-clock-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 12px auto 26px auto;
+  position: relative;
+  z-index: 10;
+}
+
+.flip-clock-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(10, 14, 26, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 15px rgba(20, 110, 245, 0.25);
+  margin-bottom: 14px;
+  backdrop-filter: blur(12px);
+}
+
+.flip-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: flipLivePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes flipLivePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.flip-clock-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.8vw, 18px);
+  perspective: 1000px;
+}
+
+/* Individual Flip Unit (Box) */
+.flip-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flip-card-box {
+  position: relative;
+  width: clamp(66px, 18vw, 102px);
+  height: clamp(74px, 20vw, 112px);
+  background-color: #131418;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: clamp(10px, 2vw, 16px);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.85),
+    0 0 25px rgba(20, 110, 245, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  perspective: 500px;
+  transform-style: preserve-3d;
+  user-select: none;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.flip-card-box:hover {
+  border-color: rgba(0, 240, 255, 0.55);
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.9),
+    0 0 35px rgba(0, 240, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Corner Sub-label like "PM" in user reference photo */
+.flip-corner-tag {
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  font-family: var(--font-mono);
+  font-size: clamp(0.55rem, 1.4vw, 0.68rem);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.5);
+  z-index: 20;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.flip-unit:last-child .flip-corner-tag {
+  color: var(--accent-cyan);
+}
+
+/* Halves: Top and Bottom */
+.flip-card-half {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  background-color: #15161b;
+  box-sizing: border-box;
+}
+
+.flip-card-half span {
+  position: absolute;
+  width: 100%;
+  height: 200%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: clamp(3.2rem, 9vw, 5rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+/* Top half */
+.flip-card-top {
+  top: 0;
+  align-items: flex-end;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.95);
+  background: linear-gradient(180deg, #181920 0%, #121317 100%);
+  border-top-left-radius: clamp(9px, 1.8vw, 15px);
+  border-top-right-radius: clamp(9px, 1.8vw, 15px);
+}
+
+.flip-card-top span {
+  top: 0;
+}
+
+/* Bottom half */
+.flip-card-bottom {
+  bottom: 0;
+  align-items: flex-start;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, #0f1013 0%, #141519 100%);
+  border-bottom-left-radius: clamp(9px, 1.8vw, 15px);
+  border-bottom-right-radius: clamp(9px, 1.8vw, 15px);
+}
+
+.flip-card-bottom span {
+  bottom: 0;
+}
+
+/* 3D Flip Flaps */
+.flip-leaf-top {
+  z-index: 10;
+  transform-origin: bottom center;
+  backface-visibility: hidden;
+}
+
+.flip-leaf-bottom {
+  z-index: 9;
+  transform-origin: top center;
+  backface-visibility: hidden;
+  transform: rotateX(90deg);
+}
+
+/* Keyframe Animations: Top Flap folds down, Bottom Flap drops into place */
+@keyframes flipDownTop {
+  0% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+  100% {
+    transform: rotateX(-90deg);
+    filter: brightness(0.4);
+  }
+}
+
+@keyframes flipDownBottom {
+  0% {
+    transform: rotateX(90deg);
+    filter: brightness(1.4);
+  }
+  100% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}
+
+.flipping-top {
+  animation: flipDownTop 0.28s cubic-bezier(0.37, 0, 0.63, 1) forwards;
+}
+
+.flipping-bottom {
+  animation: flipDownBottom 0.28s 0.27s cubic-bezier(0.37, 0, 0.63, 1) forwards;
+}
+
+/* Horizontal center divider crease line */
+.flip-divider-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.85);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+  z-index: 15;
+}
+
+/* Left & Right mechanical notch cutouts */
+.flip-side-notch-left,
+.flip-side-notch-right {
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 8px;
+  background-color: #060709;
+  transform: translateY(-50%);
+  z-index: 16;
+}
+
+.flip-side-notch-left {
+  left: -1px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.flip-side-notch-right {
+  right: -1px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+/* Colons between flip cards */
+.flip-separator {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+}
+
+.flip-separator-dot {
+  width: clamp(5px, 1.2vw, 8px);
+  height: clamp(5px, 1.2vw, 8px);
+  border-radius: 50%;
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 12px var(--accent-cyan);
+  animation: flipDotGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes flipDotGlow {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 16px #00f0ff; }
+}
+
+/* Bottom Label below card */
+.flip-bottom-label {
+  font-family: var(--font-mono);
+  font-size: clamp(0.62rem, 1.5vw, 0.74rem);
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.12em;
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+
+.flip-unit:last-child .flip-bottom-label {
+  color: var(--accent-cyan);
+}

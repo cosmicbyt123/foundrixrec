@@ -1,0 +1,554 @@
+/* ==========================================================================
+   FOUNDRIX 2026 — Kinetic Animations & Button Micro-Interactions
+   Border Beam Glow, Magnetic Hover, Ripples & Screen Transitions
+   ========================================================================== */
+
+/* 1. Electric Border Beam Animation with Ambient Pulse & Shimmer */
+.btn-border-beam {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 32px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  background: linear-gradient(180deg, #146ef5 0%, #0d47a1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 20px rgba(20, 110, 245, 0.45), 0 0 15px rgba(0, 240, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  text-decoration: none;
+  animation: btnGlowPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes btnGlowPulse {
+  0% {
+    box-shadow: 0 4px 20px rgba(20, 110, 245, 0.4), 0 0 15px rgba(0, 240, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 6px 28px rgba(20, 110, 245, 0.65), 0 0 32px rgba(0, 240, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+}
+
+.btn-border-beam::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    transparent,
+    transparent 55%,
+    rgba(0, 240, 255, 0.95) 75%,
+    #ffffff 90%,
+    transparent 100%
+  );
+  animation: rotateBeam 3.5s linear infinite;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.btn-border-beam::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: linear-gradient(180deg, #1360d9 0%, #0a3d8f 100%);
+  border-radius: var(--radius-full);
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.btn-border-beam span,
+.btn-border-beam svg {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-border-beam:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 10px 35px rgba(20, 110, 245, 0.8), 0 0 45px rgba(0, 240, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.btn-border-beam:hover::after {
+  background: linear-gradient(180deg, #1a75ff 0%, #0d4aa6 100%);
+}
+
+.btn-border-beam:hover svg {
+  transform: translateX(5px) scale(1.1);
+}
+
+.btn-border-beam:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+@keyframes rotateBeam {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 2. Secondary Ghost Button with Neon Shimmer Sheen */
+.btn-ghost-cyan {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 28px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  color: var(--accent-cyan);
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.08) 0%, rgba(20, 110, 245, 0.12) 100%);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.12);
+}
+
+.btn-ghost-cyan::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.3), transparent);
+  transform: skewX(-25deg);
+  animation: ghostShine 3.5s infinite;
+}
+
+@keyframes ghostShine {
+  0%, 65% { left: -100%; }
+  100% { left: 200%; }
+}
+
+.btn-ghost-cyan span,
+.btn-ghost-cyan svg {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-ghost-cyan:hover {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.22) 0%, rgba(20, 110, 245, 0.3) 100%);
+  border-color: #00f0ff;
+  color: #ffffff;
+  transform: translateY(-3px) scale(1.025);
+  box-shadow: 0 8px 30px rgba(0, 240, 255, 0.45), 0 0 20px rgba(20, 110, 245, 0.35);
+}
+
+.btn-ghost-cyan:hover svg {
+  transform: translateX(4px) scale(1.1);
+}
+
+.btn-ghost-cyan:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+/* 3. Universal Micro-Interactions for All Interactive Buttons */
+button:not(:disabled) {
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+button:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+button:not(:disabled):active {
+  transform: scale(0.96) translateY(1px) !important;
+}
+
+/* 3. Pulse Glow Animation */
+.glow-pulse {
+  animation: pulseGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 15px rgba(20, 110, 245, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.6), 0 0 60px rgba(20, 110, 245, 0.3);
+  }
+}
+
+/* 4. Float Animation */
+.animate-float {
+  animation: gentleFloat 4s ease-in-out infinite alternate;
+}
+
+@keyframes gentleFloat {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-8px); }
+}
+
+/* 5. Shimmer Sweep */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    var(--accent-cyan) 50%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmerSweep 3s linear infinite;
+}
+
+@keyframes shimmerSweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* 6. Mobile Horizontal Scroll Snap */
+.horizontal-snap-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 20px;
+  padding-bottom: 20px;
+  scrollbar-width: none;
+}
+
+.horizontal-snap-container::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-snap-item {
+  scroll-snap-align: center;
+  flex: 0 0 calc(100% - 40px);
+}
+
+@media (min-width: 768px) {
+  .horizontal-snap-item {
+    flex: 0 0 calc(50% - 15px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .horizontal-snap-container {
+    overflow-x: visible;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .horizontal-snap-item {
+    flex: auto;
+  }
+}
+
+/* 7. Modal Backdrop & Fade */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 12, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.modal-content {
+  background: #0c0f18;
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(20, 110, 245, 0.25);
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 10px 8px;
+  }
+  .modal-content {
+    max-height: 94vh;
+    border-radius: 16px;
+  }
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ==========================================================================
+   8. Scroll Progress Indicator (Top Dynamic Beam)
+   ========================================================================== */
+.scroll-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #146ef5 0%, #00f0ff 60%, #ffffff 100%);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.9), 0 0 5px #146ef5;
+  transition: width 0.08s linear;
+}
+
+/* ==========================================================================
+   9. Kinetic Reveal-On-Scroll Animations (Bidirectional: Up & Down)
+   ========================================================================== */
+
+/* --- Standard / Initial Base States --- */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-from-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-from-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* --- Upward Scroll Initial States (Elements entering from top when scrolling up) --- */
+.reveal-on-scroll.scroll-above:not(.is-revealed),
+body[data-scroll-dir="up"] .reveal-on-scroll:not(.is-revealed) {
+  opacity: 0;
+  transform: translateY(-40px);
+}
+
+.reveal-scale.scroll-above:not(.is-revealed),
+body[data-scroll-dir="up"] .reveal-scale:not(.is-revealed) {
+  opacity: 0;
+  transform: scale(0.92) translateY(-25px);
+}
+
+.reveal-from-left.scroll-above:not(.is-revealed),
+body[data-scroll-dir="up"] .reveal-from-left:not(.is-revealed) {
+  opacity: 0;
+  transform: translateX(-40px) translateY(-25px);
+}
+
+.reveal-from-right.scroll-above:not(.is-revealed),
+body[data-scroll-dir="up"] .reveal-from-right:not(.is-revealed) {
+  opacity: 0;
+  transform: translateX(40px) translateY(-25px);
+}
+
+/* --- Downward Scroll Initial States (Elements entering from bottom when scrolling down) --- */
+.reveal-on-scroll.scroll-below:not(.is-revealed),
+body[data-scroll-dir="down"] .reveal-on-scroll:not(.is-revealed) {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.reveal-scale.scroll-below:not(.is-revealed),
+body[data-scroll-dir="down"] .reveal-scale:not(.is-revealed) {
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+.reveal-from-left.scroll-below:not(.is-revealed),
+body[data-scroll-dir="down"] .reveal-from-left:not(.is-revealed) {
+  opacity: 0;
+  transform: translateX(-50px);
+}
+
+.reveal-from-right.scroll-below:not(.is-revealed),
+body[data-scroll-dir="down"] .reveal-from-right:not(.is-revealed) {
+  opacity: 0;
+  transform: translateX(50px);
+}
+
+/* --- Revealed Active States (Applied smoothly when intersecting in either direction) --- */
+.reveal-on-scroll.is-revealed {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.reveal-scale.is-revealed {
+  opacity: 1 !important;
+  transform: scale(1) translateY(0) !important;
+}
+
+.reveal-from-left.is-revealed {
+  opacity: 1 !important;
+  transform: translateX(0) translateY(0) !important;
+}
+
+.reveal-from-right.is-revealed {
+  opacity: 1 !important;
+  transform: translateX(0) translateY(0) !important;
+}
+
+/* Staggered Children Delay */
+.stagger-container > *:nth-child(1) { transition-delay: 60ms; }
+.stagger-container > *:nth-child(2) { transition-delay: 140ms; }
+.stagger-container > *:nth-child(3) { transition-delay: 220ms; }
+.stagger-container > *:nth-child(4) { transition-delay: 300ms; }
+.stagger-container > *:nth-child(5) { transition-delay: 380ms; }
+.stagger-container > *:nth-child(6) { transition-delay: 460ms; }
+
+/* ==========================================================================
+   10. Continuous Infinite Marquee Ribbons
+   ========================================================================== */
+.marquee-ribbon {
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+  padding: 16px 0;
+  background: rgba(10, 14, 26, 0.7);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+.marquee-content {
+  display: flex;
+  white-space: nowrap;
+  gap: 32px;
+  animation: marqueeLoop 24s linear infinite;
+  will-change: transform;
+}
+
+.marquee-content-reverse {
+  display: flex;
+  white-space: nowrap;
+  gap: 32px;
+  animation: marqueeLoopReverse 28s linear infinite;
+  will-change: transform;
+}
+
+.marquee-ribbon:hover .marquee-content,
+.marquee-ribbon:hover .marquee-content-reverse {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeLoop {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marqueeLoopReverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.marquee-dot {
+  color: var(--accent-cyan);
+  font-size: 1rem;
+}
+
+/* ==========================================================================
+   11. Floating Cyber Scroll-To-Top Button
+   ========================================================================== */
+.scroll-to-top {
+  position: fixed;
+  bottom: 85px;
+  right: 24px;
+  z-index: 99;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(8, 12, 24, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(20, 110, 245, 0.3);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateY(20px) scale(0.85);
+  pointer-events: none;
+}
+
+.scroll-to-top.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.scroll-to-top:hover {
+  transform: translateY(-4px) scale(1.08);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 240, 255, 0.6);
+  background: rgba(20, 110, 245, 0.3);
+}
+
+@media (max-width: 768px) {
+  .scroll-to-top {
+    bottom: 80px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.schedule-tab-btn:hover {
+  transform: translateY(-2px) scale(1.03) !important;
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.45) !important;
+}

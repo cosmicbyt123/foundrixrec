@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80" fill="none">
+  <defs>
+    <linearGradient id="recGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#146ef5"/>
+      <stop offset="100%" stop-color="#00f0ff"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield Crest Icon -->
+  <g transform="translate(10, 8)">
+    <!-- Outer Shield with Glow -->
+    <path d="M32 0 L60 10 V38 C60 52 46 62 32 64 C18 62 4 52 4 38 V10 Z" fill="url(#shieldGrad)" stroke="url(#recGrad)" stroke-width="2.5" />
+    
+    <!-- Inner Gear / Sun Burst -->
+    <circle cx="32" cy="28" r="14" fill="none" stroke="#00f0ff" stroke-width="1.8" stroke-dasharray="3 2" />
+    <circle cx="32" cy="28" r="7" fill="url(#recGrad)" />
+    
+    <!-- Open Book / Wings at bottom of shield -->
+    <path d="M18 45 Q32 38 46 45 Q32 49 18 45 Z" fill="#ffffff" opacity="0.9" />
+    <path d="M32 39 V48" stroke="#146ef5" stroke-width="1.5" />
+    
+    <!-- Mini Star at apex -->
+    <polygon points="32,7 34,12 39,12 35,15 37,20 32,17 27,20 29,15 25,12 30,12" fill="#fbbf24" />
+  </g>
+
+  <!-- Typography -->
+  <text x="82" y="32" font-family="'Inter', sans-serif" font-weight="900" font-size="21" fill="#ffffff" letter-spacing="0.06em">
+    RAGHU
+  </text>
+  <text x="165" y="32" font-family="'Inter', sans-serif" font-weight="700" font-size="21" fill="#00f0ff" letter-spacing="0.04em">
+    ENGINEERING COLLEGE
+  </text>
+  
+  <text x="82" y="49" font-family="'Inter', sans-serif" font-weight="600" font-size="10.5" fill="#94a3b8" letter-spacing="0.12em">
+    AUTONOMOUS • NBA &amp; NAAC A+ GRADE
+  </text>
+
+  <text x="82" y="63" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="9" fill="#146ef5" letter-spacing="0.18em">
+    VISAKHAPATNAM • ESTD 2001
+  </text>
+</svg>
