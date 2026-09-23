@@ -24,7 +24,7 @@ export const CONFIG = {
   
   // Early Bird Perk
   MAX_EARLY_BIRD_SPOTS: 200,
-  EARLY_BIRD_INSTITUTE: 'E-Cell, IIT Delhi',
+  EARLY_BIRD_INSTITUTE: 'E-Cell, IIT Mumbai',
   
   // Hackathon Deadlines
   HACKATHON_TEAM_LOCK_DEADLINE: '2026-10-04T23:59:59+05:30',

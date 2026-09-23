@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CinematicLoader from './components/Loader/CinematicLoader';
 import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero/Hero';
@@ -18,12 +18,20 @@ import CustomCursor from './components/Common/CustomCursor';
 import MarqueeTicker from './components/Common/MarqueeTicker';
 import useScrollReveal from './components/Common/useScrollReveal';
 import { getActiveParticipant, getPurchasedPass } from './services/sessionService';
+import { fetchEarlyBirdStats } from './services/registrationService';
 
 export const App = () => {
   const [loading, setLoading] = useState(true);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+  const [isEarlyBirdActive, setIsEarlyBirdActive] = useState(true);
+
+  useEffect(() => {
+    fetchEarlyBirdStats().then((data) => {
+      if (data) setIsEarlyBirdActive(data.offerActive && data.spotsRemaining > 0);
+    });
+  }, []);
 
   const handleLoginClick = () => {
     const active = getActiveParticipant() || getPurchasedPass();
@@ -44,7 +52,7 @@ export const App = () => {
     'ONLINE HACKATHON ARENA',
     '2-DAY IN-PERSON WORKSHOP',
     'E-CELL IIT BOMBAY',
-    'FIRST 200 GET E-CELL IIT DELHI CERTIFICATES',
+    isEarlyBirdActive ? 'FIRST 200 GET E-CELL IIT MUMBAI CERTIFICATES' : 'ALL-INCLUSIVE WORKSHOPS & HACKATHON PASS',
     'LIVE JURY PITCH & DEMO',
   ];
 

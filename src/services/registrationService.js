@@ -166,6 +166,7 @@ export const submitRegistration = async (fullData) => {
           name: payload.name,
           email: payload.email,
           utr: payload.utr,
+          iitMumbaiEligible: localCount <= 200,
           iitDelhiEligible: localCount <= 200,
           isDemo: true,
         },
@@ -210,7 +211,8 @@ export const submitRegistration = async (fullData) => {
         location: payload.location,
         roll: payload.roll,
         utr: payload.utr,
-        iitDelhiEligible: result?.data?.iitDelhiEligible ?? true,
+        iitMumbaiEligible: result?.data?.iitMumbaiEligible ?? result?.data?.iitDelhiEligible ?? true,
+        iitDelhiEligible: result?.data?.iitMumbaiEligible ?? result?.data?.iitDelhiEligible ?? true,
         isDemo: false,
       };
 
@@ -252,7 +254,7 @@ export const submitRegistration = async (fullData) => {
 };
 
 /**
- * Fetches server-side early bird statistics (verified count & spots left for E-Cell IIT Delhi perk)
+ * Fetches server-side early bird statistics (verified count & spots left for E-Cell IIT Mumbai perk)
  */
 export const fetchEarlyBirdStats = async () => {
   const endpoint = CONFIG.GOOGLE_SCRIPT_URL;
@@ -270,16 +272,19 @@ export const fetchEarlyBirdStats = async () => {
   try {
     const res = await fetch(`${endpoint}?action=stats`, { method: 'GET' });
     const data = await res.json();
+    const count = data.verifiedCount ?? data.totalRegistrations ?? 0;
+    const remaining = data.spotsRemaining ?? Math.max(0, CONFIG.MAX_EARLY_BIRD_SPOTS - count);
+    const isOfferActive = (data.offerActive !== false) && remaining > 0 && count < CONFIG.MAX_EARLY_BIRD_SPOTS;
     return {
-      verifiedCount: data.verifiedCount || 0,
-      spotsRemaining: data.spotsRemaining ?? Math.max(0, CONFIG.MAX_EARLY_BIRD_SPOTS - (data.verifiedCount || 0)),
-      offerActive: data.offerActive ?? true,
+      verifiedCount: count,
+      spotsRemaining: remaining,
+      offerActive: isOfferActive,
     };
   } catch (err) {
     console.warn('Could not fetch remote early bird stats, using fallback:', err);
     return {
-      verifiedCount: 142,
-      spotsRemaining: 58,
+      verifiedCount: 6,
+      spotsRemaining: 194,
       offerActive: true,
     };
   }

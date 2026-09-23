@@ -746,7 +746,16 @@ function updateHackathonTeamSheet(ss, payload) {
   teams.forEach((team, tIdx) => {
     hackSheet.appendRow(['']); // Visual spacer
     const members = (team.members && Array.isArray(team.members)) ? team.members : [team.leader || team];
-    const teamTitle = 'TEAM ' + (team.teamId || 'TEAM' + (tIdx + 1)) + ': ' + 
+    
+    // Normalize team ID display: always clean "TEAM-001", "TEAM-002" without duplicate "TEAM TEAM"
+    let cleanId = String(team.teamId || '').trim().toUpperCase();
+    if (!cleanId) {
+      cleanId = 'TEAM-' + String(tIdx + 1).padStart(3, '0');
+    } else {
+      cleanId = cleanId.replace(/^TEAM\s*TEAM/i, 'TEAM').replace(/^TEAM\s*-?\s*/i, 'TEAM-');
+    }
+
+    const teamTitle = cleanId + ': ' + 
                       (team.teamName || 'UNTITLED').toUpperCase() + 
                       '  [SHAREABLE CODE: ' + (team.teamCode || 'N/A') + ']  (' + members.length + '/4 Members)';
     
@@ -811,7 +820,7 @@ function updateHackathonTeamSheet(ss, payload) {
     const memberSummary = (t.members || []).map(m => `${m.name || 'Member'} (${m.regId || 'ID'})`).join(', ');
     presentSheet.appendRow([
       i + 1,
-      t.teamId || `TEAM${i + 1}`,
+      (t.teamId || ('TEAM-' + String(i + 1).padStart(3, '0'))).replace(/^TEAM\s*TEAM/i, 'TEAM').replace(/^TEAM-?/i, 'TEAM-'),
       t.teamCode || '',
       (t.teamName || '').toUpperCase(),
       t.college || 'Raghu Engineering College',
@@ -1046,7 +1055,7 @@ function sendParticipantConfirmationEmail(sheet, rowIndex) {
             <li><strong style="color: #ffffff;">Online Hackathon:</strong> Build sprint + live jury pitch on Day 1 (Oct 9).</li>
             <li><strong style="color: #ffffff;">2-Day In-Person Workshop:</strong> Tech, startup & venture masterclasses inside REC campus.</li>
             <li><strong style="color: #ffffff;">Official Delegate Kit:</strong> Summit ID badge, stickers, notebook & welcome swags.</li>
-            <li><strong style="color: #ffffff;">Verified Academic Certificates:</strong> E-Cell, IIT Delhi certificate (first 200) + official participation credentials.</li>
+            <li><strong style="color: #ffffff;">Verified Academic Certificates:</strong> E-Cell, IIT Mumbai certificate (first 200) + official participation credentials.</li>
           </ul>
 
           <!-- Check-in Guide -->

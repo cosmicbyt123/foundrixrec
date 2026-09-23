@@ -81,7 +81,7 @@ export const EarlyPerkBanner = ({ onRegisterClick }) => {
             <span>
               First 200 Registrations get an Official Certificate from{' '}
               <strong style={{ color: '#ffffff', textDecoration: 'underline', textDecorationColor: 'var(--accent-cyan)' }}>
-                E-Cell, IIT Delhi
+                E-Cell, IIT Mumbai
               </strong>
               !
             </span>

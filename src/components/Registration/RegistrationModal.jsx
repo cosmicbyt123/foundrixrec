@@ -889,7 +889,7 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub, onOpenD
                 Our desk will verify the payment and email your official pass & credentials within <strong>12 hours</strong>.
               </p>
 
-              {activeSubmission.iitDelhiEligible && (
+              {(activeSubmission.iitMumbaiEligible ?? activeSubmission.iitDelhiEligible) && (
                 <div
                   style={{
                     padding: '12px 16px',
@@ -905,7 +905,7 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub, onOpenD
                   }}
                 >
                   <Sparkles size={16} />
-                  <span>You have qualified for the <strong>E-Cell, IIT Delhi Certificate</strong> perk!</span>
+                  <span>You have qualified for the <strong>E-Cell, IIT Mumbai Certificate</strong> perk!</span>
                 </div>
               )}
 

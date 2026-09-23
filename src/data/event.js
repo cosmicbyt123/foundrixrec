@@ -16,8 +16,8 @@ export const EVENT_DATA = {
   
   earlyBird: {
     title: 'EXCLUSIVE EARLY BIRD PERK',
-    tagline: 'First 200 Registrations receive an official Certificate from E-Cell, IIT Delhi!',
-    institute: 'E-Cell, IIT Delhi',
+    tagline: 'First 200 Registrations receive an official Certificate from E-Cell, IIT Mumbai!',
+    institute: 'E-Cell, IIT Mumbai',
     maxSpots: 200,
   },
 
@@ -93,8 +93,8 @@ export const EVENT_DATA = {
       a: 'The ₹799 pass is flat and all-inclusive per participant. It grants full entry to the 2-Day In-Person Workshop at Raghu Engineering College, entry into the Online Hackathon, official Foundrix Swags & Merch Kit, certificates, and delegate sessions.'
     },
     {
-      q: 'How does the E-Cell, IIT Delhi certificate offer work?',
-      a: 'The first 200 registered students automatically qualify for an official certificate from E-Cell, IIT Delhi! Our server tracks verified transactions live, and the offer automatically locks once the 200 spots are filled.'
+      q: 'How does the E-Cell, IIT Mumbai certificate offer work?',
+      a: 'The first 200 registered students automatically qualify for an official certificate from E-Cell, IIT Mumbai! Our server tracks verified transactions live, and the offer automatically locks once the 200 spots are filled.'
     },
     {
       q: 'How do we form a Hackathon team of 3 to 4 members?',

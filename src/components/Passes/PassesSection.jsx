@@ -1,15 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Ticket, Check, ArrowUpRight, Sparkles, Award } from 'lucide-react';
 import { EVENT_DATA } from '../../data/event';
+import { fetchEarlyBirdStats } from '../../services/registrationService';
 
 export const PassesSection = ({ onRegisterClick }) => {
   const { pass } = EVENT_DATA;
+  const [stats, setStats] = useState({
+    verifiedCount: 6,
+    spotsRemaining: 194,
+    offerActive: true,
+  });
+
+  useEffect(() => {
+    fetchEarlyBirdStats().then((data) => {
+      if (data) setStats(data);
+    });
+  }, []);
+
+  const isEarlyBirdActive = stats.offerActive && stats.spotsRemaining > 0;
 
   return (
     <section id="passes" style={{ padding: '90px 0', position: 'relative' }}>
       <div className="container">
         {/* Exact Congra Template Section Header */}
-        <div className="reveal-on-scroll" style={{ textAlign: 'center', marginBottom: '55px' }}>
+        <div className="reveal-on-scroll" style={{ textAlign: 'center', marginBottom: '45px' }}>
           <h2
             style={{
               fontFamily: 'var(--font-heading)',
@@ -21,7 +35,7 @@ export const PassesSection = ({ onRegisterClick }) => {
               lineHeight: '0.92',
             }}
           >
-            SELECT YOUR EXPERIENCE
+            {isEarlyBirdActive ? 'SELECT YOUR EXPERIENCE' : 'FOUNDRIX 2026 PASS'}
           </h2>
           <p
             style={{
@@ -30,17 +44,45 @@ export const PassesSection = ({ onRegisterClick }) => {
               margin: 0,
             }}
           >
-            Choose the experience that suits you best! Flat ₹799 per head all-inclusive pass.
+            {isEarlyBirdActive 
+              ? 'Choose the experience that suits you best! Flat ₹799 per head all-inclusive pass.'
+              : 'Flat ₹799 per head all-inclusive pass for the 2-day flagship summit.'}
           </p>
         </div>
 
-        {/* 2-Card Congra Experience Grid */}
+        {/* Sold out notice if 200 spots reached */}
+        {!isEarlyBirdActive && (
+          <div
+            className="reveal-on-scroll"
+            style={{
+              maxWidth: '520px',
+              margin: '0 auto 28px auto',
+              padding: '12px 18px',
+              backgroundColor: 'rgba(239, 68, 68, 0.08)',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
+              borderRadius: '6px',
+              color: '#f87171',
+              fontSize: '0.88rem',
+              fontWeight: '600',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            <Sparkles size={16} />
+            <span>First 200 Early Bird Passes (IIT Mumbai Perk) are fully claimed. Standard passes now active.</span>
+          </div>
+        )}
+
+        {/* Experience Grid */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+            gridTemplateColumns: isEarlyBirdActive ? 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))' : '1fr',
             gap: '24px',
-            maxWidth: '920px',
+            maxWidth: isEarlyBirdActive ? '920px' : '520px',
             margin: '0 auto',
             alignItems: 'stretch',
           }}
@@ -188,43 +230,44 @@ export const PassesSection = ({ onRegisterClick }) => {
             </button>
           </div>
 
-          {/* Card 2: Electric Cobalt Blue Featured Card (First 200 Early Bird Spotlight) */}
-          <div
-            className="reveal-from-right"
-            style={{
-              backgroundColor: '#146ef5',
-              border: '1px solid #00f0ff',
-              borderRadius: '8px',
-              padding: 'clamp(28px, 4vw, 40px)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: '0 20px 50px rgba(20, 110, 245, 0.5), 0 0 30px rgba(0, 240, 255, 0.3)',
-              position: 'relative',
-              transition: 'transform 0.25s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'none')}
-          >
-            {/* Top Badge */}
+          {/* Card 2: Electric Cobalt Blue Featured Card (First 200 Early Bird Spotlight) - REMOVED WHEN 200 HIT */}
+          {isEarlyBirdActive && (
             <div
+              className="reveal-from-right"
               style={{
-                position: 'absolute',
-                top: '-13px',
-                right: '24px',
-                backgroundColor: '#ffffff',
-                color: '#146ef5',
-                padding: '4px 12px',
-                borderRadius: '4px',
-                fontSize: '0.72rem',
-                fontWeight: '900',
-                fontFamily: 'var(--font-mono)',
-                letterSpacing: '0.08em',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                backgroundColor: '#146ef5',
+                border: '1px solid #00f0ff',
+                borderRadius: '8px',
+                padding: 'clamp(28px, 4vw, 40px)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                boxShadow: '0 20px 50px rgba(20, 110, 245, 0.5), 0 0 30px rgba(0, 240, 255, 0.3)',
+                position: 'relative',
+                transition: 'transform 0.25s ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'none')}
             >
-              LIMITED TO FIRST 200
-            </div>
+              {/* Top Badge */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-13px',
+                  right: '24px',
+                  backgroundColor: '#ffffff',
+                  color: '#146ef5',
+                  padding: '4px 12px',
+                  borderRadius: '4px',
+                  fontSize: '0.72rem',
+                  fontWeight: '900',
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.08em',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                }}
+              >
+                LIMITED TO FIRST 200 • {stats.spotsRemaining} SPOTS LEFT
+              </div>
 
             <div>
               <div
@@ -276,14 +319,14 @@ export const PassesSection = ({ onRegisterClick }) => {
                     fontWeight: '700',
                   }}
                 >
-                  + IIT DELHI CERTIFICATE
+                  + IIT MUMBAI CERTIFICATE
                 </span>
               </div>
 
               {/* Congra White Square Checklist */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '36px' }}>
                 {[
-                  'Official Certificate from E-Cell, IIT Delhi (First 200 Only)',
+                  'Official Certificate from E-Cell, IIT Mumbai (First 200 Only)',
                   'Full Entry to 2-Day In-Person Workshop at Raghu Engg College',
                   'Entry to Online Hackathon (Form 3–4 Member Team)',
                   'Priority Pitch Slot on Day 1 (9 Oct) Before Startup Jury',
@@ -350,6 +393,7 @@ export const PassesSection = ({ onRegisterClick }) => {
               <ArrowUpRight size={18} />
             </button>
           </div>
+          )}
         </div>
       </div>
     </section>
