@@ -109,18 +109,18 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
           <div
             style={{
               fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(2.2rem, 10vw, 8.4rem)',
+              fontSize: 'clamp(2.1rem, 9.5vw, 7.8rem)',
               fontWeight: '900',
               lineHeight: '0.9',
               letterSpacing: '0.02em',
               color: '#ffffff',
               textTransform: 'uppercase',
-              textShadow: '0 8px 40px rgba(0, 0, 0, 0.95), 0 0 70px rgba(0, 240, 255, 0.45)',
+              textShadow: '0 8px 40px rgba(0, 0, 0, 0.95)',
               marginTop: '4px',
               wordBreak: 'break-word',
             }}
           >
-            THE TECH SUMMIT
+            ENTREPRENEURSHIP & TECH SUMMIT
           </div>
         </div>
 
@@ -195,34 +195,34 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
             width: '100%',
           }}
         >
-          {/* Concept Glowing Radiant Blue GET TICKETS Button */}
+          {/* Executive Venture GET PASS Button */}
           <button
             onClick={onRegisterClick}
             style={{
-              background: 'linear-gradient(180deg, #1872f8 0%, #084ebd 100%)',
-              border: '2px solid #00f0ff',
+              background: 'linear-gradient(180deg, #1872f8 0%, #0d4fae 100%)',
+              border: '1.5px solid rgba(0, 240, 255, 0.7)',
               borderRadius: '9999px',
               padding: '14px 38px',
               color: '#ffffff',
-              fontSize: '1.05rem',
+              fontSize: '1.02rem',
               fontWeight: '800',
               fontFamily: 'var(--font-body)',
-              letterSpacing: '0.06em',
+              letterSpacing: '0.05em',
               textTransform: 'uppercase',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '10px',
-              boxShadow: '0 0 35px rgba(20, 110, 245, 0.9), 0 0 16px rgba(0, 240, 255, 0.8)',
+              boxShadow: '0 8px 28px rgba(20, 110, 245, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
               transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.03)';
-              e.currentTarget.style.boxShadow = '0 0 50px rgba(20, 110, 245, 1), 0 0 25px rgba(0, 240, 255, 1)';
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 12px 35px rgba(20, 110, 245, 0.65), 0 0 20px rgba(0, 240, 255, 0.4)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'none';
-              e.currentTarget.style.boxShadow = '0 0 35px rgba(20, 110, 245, 0.9), 0 0 16px rgba(0, 240, 255, 0.8)';
+              e.currentTarget.style.boxShadow = '0 8px 28px rgba(20, 110, 245, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
             }}
           >
             <span>GET PASS — ₹799</span>
