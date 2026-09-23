@@ -60,6 +60,11 @@ export const useScrollReveal = (selector = '.reveal-on-scroll, .reveal-scale, .r
       (entries) => {
         entries.forEach((entry) => {
           const el = entry.target;
+          if (el.closest('#hero')) {
+            el.classList.add('is-revealed');
+            el.classList.remove('scroll-above', 'scroll-below');
+            return;
+          }
 
           if (entry.isIntersecting) {
             el.classList.add('is-revealed');

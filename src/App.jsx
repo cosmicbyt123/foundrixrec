@@ -1,28 +1,38 @@
 import React, { useState } from 'react';
 import CinematicLoader from './components/Loader/CinematicLoader';
-import EarlyPerkBanner from './components/EarlyPerk/EarlyPerkBanner';
 import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero/Hero';
 import EventsSection from './components/Events/EventsSection';
-import ScheduleSection from './components/Schedule/ScheduleSection';
 import VenueSection from './components/Venue/VenueSection';
 import PassesSection from './components/Passes/PassesSection';
 import FAQSection from './components/FAQ/FAQSection';
 import ContactSection from './components/Contact/ContactSection';
 import Footer from './components/Footer/Footer';
 import RegistrationModal from './components/Registration/RegistrationModal';
-import HackathonHub from './components/Hackathon/HackathonHub';
+import AttendeeDashboard from './components/Dashboard/AttendeeDashboard';
+import LoginModal from './components/Auth/LoginModal';
 import MobileBottomDock from './components/Navbar/MobileBottomDock';
 import ScrollProgressBar from './components/Common/ScrollProgressBar';
 import ScrollToTop from './components/Common/ScrollToTop';
 import CustomCursor from './components/Common/CustomCursor';
 import MarqueeTicker from './components/Common/MarqueeTicker';
 import useScrollReveal from './components/Common/useScrollReveal';
+import { getActiveParticipant, getPurchasedPass } from './services/sessionService';
 
 export const App = () => {
   const [loading, setLoading] = useState(true);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [isHackathonHubOpen, setIsHackathonHubOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+
+  const handleLoginClick = () => {
+    const active = getActiveParticipant() || getPurchasedPass();
+    if (active && (active.regId || active.name)) {
+      setIsDashboardOpen(true);
+    } else {
+      setIsLoginOpen(true);
+    }
+  };
 
   // Activate scroll-driven reveal animations
   useScrollReveal();
@@ -62,20 +72,17 @@ export const App = () => {
       {/* 1. Cinematic Preloader */}
       {loading && <CinematicLoader onComplete={() => setLoading(false)} />}
 
-      {/* 2. Exclusive Early Bird Perk Bar (First 200 E-Cell, IIT Delhi) */}
-      <EarlyPerkBanner onRegisterClick={() => setIsRegisterOpen(true)} />
-
-      {/* 3. Sticky Navigation */}
+      {/* 2. Sticky Navigation */}
       <Navbar
         onRegisterClick={() => setIsRegisterOpen(true)}
-        onOpenHackathonHub={() => setIsHackathonHubOpen(true)}
+        onOpenHackathonHub={handleLoginClick}
       />
 
       {/* 4. Monumental Hero Section */}
       <main style={{ flex: 1 }}>
         <Hero
           onRegisterClick={() => setIsRegisterOpen(true)}
-          onOpenHackathonHub={() => setIsHackathonHubOpen(true)}
+          onOpenHackathonHub={handleLoginClick}
         />
 
         {/* Dynamic Infinite Marquee Ribbon 1 */}
@@ -84,13 +91,10 @@ export const App = () => {
         {/* 5. The 2 Core Event Pillars (Online Hackathon & Workshop) */}
         <EventsSection
           onRegisterClick={() => setIsRegisterOpen(true)}
-          onOpenHackathonHub={() => setIsHackathonHubOpen(true)}
+          onOpenHackathonHub={handleLoginClick}
         />
 
-        {/* 6. 2-Day Schedule (Oct 9 Pitch & Workshop / Oct 10 Workshop & Valedictory) */}
-        <ScheduleSection />
-
-        {/* 7. Campus Venue & Student Host Info */}
+        {/* 6. Campus Venue Showcase */}
         <VenueSection />
 
         {/* Dynamic Reverse Marquee Ribbon 2 */}
@@ -109,31 +113,49 @@ export const App = () => {
       {/* 11. Modern Footer */}
       <Footer
         onRegisterClick={() => setIsRegisterOpen(true)}
-        onOpenHackathonHub={() => setIsHackathonHubOpen(true)}
+        onOpenHackathonHub={handleLoginClick}
       />
 
       {/* Floating Mobile Bottom Action Dock */}
       <MobileBottomDock
         onRegisterClick={() => setIsRegisterOpen(true)}
-        onOpenHackathonHub={() => setIsHackathonHubOpen(true)}
+        onOpenHackathonHub={handleLoginClick}
       />
 
       {/* 3-Step Registration & Payment Modal */}
       <RegistrationModal
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
+        onOpenDashboard={() => {
+          setIsRegisterOpen(false);
+          setIsDashboardOpen(true);
+        }}
         onOpenHackathonHub={() => {
           setIsRegisterOpen(false);
-          setIsHackathonHubOpen(true);
+          setIsDashboardOpen(true);
         }}
       />
 
-      {/* Hackathon Team Hub Modal */}
-      <HackathonHub
-        isOpen={isHackathonHubOpen}
-        onClose={() => setIsHackathonHubOpen(false)}
+      {/* Delegate Login Modal */}
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLoginSuccess={() => {
+          setIsLoginOpen(false);
+          setIsDashboardOpen(true);
+        }}
         onRegisterClick={() => {
-          setIsHackathonHubOpen(false);
+          setIsLoginOpen(false);
+          setIsRegisterOpen(true);
+        }}
+      />
+
+      {/* Unified Attendee Dashboard (Pass + Pending Status + Hackathon Teams) */}
+      <AttendeeDashboard
+        isOpen={isDashboardOpen}
+        onClose={() => setIsDashboardOpen(false)}
+        onRegisterAnother={() => {
+          setIsDashboardOpen(false);
           setIsRegisterOpen(true);
         }}
       />

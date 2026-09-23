@@ -9,14 +9,14 @@ export const CONFIG = {
   EVENT_NAME: 'FOUNDRIX 2026',
   EVENT_TAGLINE: 'Flagship Startup & Tech Summit',
   EVENT_DATES: '9–10 October 2026',
-  ORGANIZER: 'NEC Team, Raghu Engineering College',
-  ASSOCIATION: 'In Association with E-Cell IIT Bombay (NEC)',
+  ORGANIZER: 'Students of Raghu Engineering College',
+  ASSOCIATION: 'Raghu Engineering College',
   VENUE_NAME: 'Raghu Engineering College',
   VENUE_LOCATION: 'Dakamarri, Bheemunipatnam, Visakhapatnam, Andhra Pradesh',
   
   // UPI Payment Details
   UPI_ID: '9391183459@ybl',
-  UPI_PAYEE_NAME: 'Raghu Engineering College NEC Team',
+  UPI_PAYEE_NAME: 'Raghu Engineering College',
   UPI_QR_IMAGE: '/assets/upi-qr.png',
 
   // Official Delegates WhatsApp Community

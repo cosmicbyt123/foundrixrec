@@ -351,6 +351,17 @@ button:not(:disabled):active {
    9. Kinetic Reveal-On-Scroll Animations (Bidirectional: Up & Down)
    ========================================================================== */
 
+/* Guarantee Hero is always 100% visible and never blank */
+#hero,
+#hero *,
+#hero .reveal-on-scroll,
+#hero .reveal-scale,
+#hero .reveal-from-left,
+#hero .reveal-from-right {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 /* --- Standard / Initial Base States --- */
 .reveal-on-scroll {
   opacity: 0;
@@ -577,3 +588,124 @@ body[data-scroll-dir="down"] .reveal-from-right:not(.is-revealed) {
   border-color: var(--accent-cyan) !important;
   box-shadow: 0 0 25px rgba(0, 240, 255, 0.45) !important;
 }
+
+/* ==========================================================================
+   9. Attendee Dashboard Mobile & Single-Page Print Utilities
+   ========================================================================== */
+@media print {
+  /* 1. Completely collapse the rest of the website from the document flow */
+  header,
+  footer,
+  main,
+  nav,
+  .scroll-progress-container,
+  .custom-cursor,
+  .scroll-to-top,
+  .mobile-bottom-dock,
+  .dashboard-print-btn,
+  .btn-ghost-cyan,
+  .btn-border-beam,
+  .attendee-dashboard-content > div:first-child,
+  .attendee-dashboard-content button,
+  .attendee-dashboard-content > div:last-child {
+    display: none !important;
+  }
+
+  /* 2. Reset html & body so document height is only the ticket itself */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* 3. The modal overlay collapses into a clean transparent block */
+  .attendee-dashboard-overlay {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .attendee-dashboard-content {
+    position: static !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    max-height: none !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* 4. The ticket prints cleanly on EXACTLY 1 SINGLE PAGE */
+  .printable-summit-pass {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 680px !important;
+    margin: 10px auto !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 2px solid #146ef5 !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+  }
+
+  .printable-summit-pass * {
+    color: #0f172a !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Keep top ribbon header blue */
+  .printable-summit-pass > div:first-child {
+    background-color: #146ef5 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .printable-summit-pass > div:first-child * {
+    color: #ffffff !important;
+  }
+
+  .printable-summit-pass img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+}
+
+@media (max-width: 640px) {
+  .attendee-dashboard-content {
+    max-height: calc(100dvh - 16px) !important;
+    border-radius: 14px !important;
+    padding: 14px 12px !important;
+  }
+  .attendee-dashboard-overlay {
+    padding: max(6px, env(safe-area-inset-top, 6px)) 6px max(10px, env(safe-area-inset-bottom, 10px)) 6px !important;
+  }
+}
+

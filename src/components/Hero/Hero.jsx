@@ -72,7 +72,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
       >
         {/* Top Association Pill */}
         <div
-          className="pill-badge reveal-on-scroll"
+          className="pill-badge"
           style={{
             marginBottom: '18px',
             backgroundColor: 'rgba(9, 14, 28, 0.8)',
@@ -83,12 +83,12 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
         >
           <Sparkles size={14} color="var(--accent-cyan)" />
           <span style={{ color: 'var(--accent-cyan)', letterSpacing: '0.12em', textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: '700' }}>
-            {hero.association}
+            PRESENTED BY STUDENTS OF RAGHU ENGINEERING COLLEGE
           </span>
         </div>
 
         {/* Monumental Bebas Neue Condensed Headline */}
-        <div className="reveal-on-scroll" style={{ marginBottom: '20px', transitionDelay: '80ms', width: '100%' }}>
+        <div style={{ marginBottom: '20px', width: '100%' }}>
           <h1
             style={{
               fontFamily: 'var(--font-heading)',
@@ -127,63 +127,9 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
         {/* 3D Mechanical Split-Flap / Flip Clock Countdown */}
         <FlipClock targetDate={hero.targetDate} />
 
-        {/* Symmetrical Controls Row: Venue & Date Pills */}
-        <div
-          className="reveal-on-scroll"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            marginBottom: '26px',
-            transitionDelay: '180ms',
-          }}
-        >
-          {/* Capsule Pill: Campus Arena */}
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '7px',
-              padding: '10px 18px',
-              borderRadius: 'var(--radius-full)',
-              background: 'rgba(10, 14, 26, 0.85)',
-              border: '1px solid rgba(255, 255, 255, 0.16)',
-              backdropFilter: 'blur(16px)',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
-            }}
-          >
-            <MapPin size={15} color="var(--accent-cyan)" />
-            <span style={{ color: '#ffffff', fontSize: '0.82rem', fontWeight: '700', letterSpacing: '0.06em', fontFamily: 'var(--font-mono)' }}>
-              CAMPUS ARENA, REC
-            </span>
-          </div>
-
-          {/* Capsule Pill: Summit Dates */}
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '7px',
-              padding: '10px 18px',
-              borderRadius: 'var(--radius-full)',
-              background: 'rgba(10, 14, 26, 0.85)',
-              border: '1px solid rgba(255, 255, 255, 0.16)',
-              backdropFilter: 'blur(16px)',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
-            }}
-          >
-            <Calendar size={15} color="var(--accent-cyan)" />
-            <span style={{ color: '#ffffff', fontSize: '0.82rem', fontWeight: '700', letterSpacing: '0.06em', fontFamily: 'var(--font-mono)' }}>
-              OCT 9–10, 2026
-            </span>
-          </div>
-        </div>
-
         {/* Radiant Electric Blue Button + Team Hub Button */}
         <div
-          className="reveal-on-scroll hero-cta-group"
+          className="hero-cta-group"
           style={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -191,11 +137,10 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
             justifyContent: 'center',
             gap: '16px',
             marginBottom: '15px',
-            transitionDelay: '240ms',
             width: '100%',
           }}
         >
-          {/* Executive Venture GET PASS Button */}
+          {/* REGISTER Button */}
           <button
             onClick={onRegisterClick}
             style={{
@@ -207,7 +152,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
               fontSize: '1.02rem',
               fontWeight: '800',
               fontFamily: 'var(--font-body)',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
               cursor: 'pointer',
               display: 'inline-flex',
@@ -225,23 +170,23 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
               e.currentTarget.style.boxShadow = '0 8px 28px rgba(20, 110, 245, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
             }}
           >
-            <span>GET PASS — ₹799</span>
+            <span>REGISTER</span>
             <ArrowUpRight size={20} />
           </button>
 
-          {/* Sleek Dark Glass Team Hub Button */}
+          {/* LOGIN Button */}
           <button
             onClick={onOpenHackathonHub}
             style={{
               background: 'rgba(10, 14, 26, 0.8)',
               border: '1.5px solid rgba(255, 255, 255, 0.22)',
               borderRadius: '9999px',
-              padding: '14px 30px',
+              padding: '14px 34px',
               color: '#ffffff',
-              fontSize: '0.96rem',
+              fontSize: '0.98rem',
               fontWeight: '700',
               fontFamily: 'var(--font-body)',
-              letterSpacing: '0.04em',
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
               cursor: 'pointer',
               display: 'inline-flex',
@@ -262,20 +207,18 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
             }}
           >
             <Users size={18} color="var(--accent-cyan)" />
-            <span>HACKATHON TEAM HUB</span>
+            <span>LOGIN</span>
           </button>
         </div>
 
         {/* Micro Subtitle */}
         <p
-          className="reveal-on-scroll"
           style={{
             color: 'var(--text-muted)',
             fontSize: '0.82rem',
             fontFamily: 'var(--font-mono)',
             letterSpacing: '0.05em',
             marginTop: '6px',
-            transitionDelay: '300ms',
           }}
         >
           ₹799 ALL-INCLUSIVE PASS • 2-DAY WORKSHOP + ONLINE HACKATHON + SWAGS + CERTIFICATES
@@ -284,7 +227,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
 
       {/* Concept Lower-Third Bento Preview Cards (Hackathon, Workshop, Pass Perks) */}
       <div
-        className="container stagger-container"
+        className="container"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -302,7 +245,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
           {/* Pillar 1: Online Hackathon */}
           <div
             onClick={onOpenHackathonHub}
-            className="horizontal-snap-item glass-card reveal-from-left"
+            className="horizontal-snap-item glass-card"
             style={{
               background: 'linear-gradient(180deg, rgba(16, 24, 44, 0.85) 0%, rgba(9, 13, 24, 0.95) 100%)',
               border: '1px solid rgba(0, 240, 255, 0.35)',
@@ -341,7 +284,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
           {/* Pillar 2: Entrepreneurship Workshop */}
           <div
             onClick={onRegisterClick}
-            className="horizontal-snap-item glass-card reveal-scale"
+            className="horizontal-snap-item glass-card"
             style={{
               background: 'linear-gradient(180deg, rgba(16, 24, 44, 0.85) 0%, rgba(9, 13, 24, 0.95) 100%)',
               border: '1px solid rgba(20, 110, 245, 0.45)',
@@ -380,7 +323,7 @@ export const Hero = ({ onRegisterClick, onOpenHackathonHub }) => {
           {/* Pillar 3: All-Inclusive ₹799 Pass */}
           <div
             onClick={onRegisterClick}
-            className="horizontal-snap-item glass-card reveal-from-right"
+            className="horizontal-snap-item glass-card"
             style={{
               background: 'linear-gradient(180deg, rgba(16, 24, 44, 0.85) 0%, rgba(9, 13, 24, 0.95) 100%)',
               border: '1px solid rgba(251, 191, 36, 0.4)',

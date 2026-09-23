@@ -1,96 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, Check, Upload, ArrowRight, ArrowLeft, ShieldCheck, CheckCircle2, AlertCircle, FileText, Phone, Sparkles, PartyPopper, MessageCircle, ExternalLink } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { CONFIG } from '../../config/environment';
+import { triggerCelebrationCrackers } from '../../utils/confetti';
 import { validateRegistrationForm, validatePaymentProof, submitRegistration } from '../../services/registrationService';
 import {
   getPurchasedPass,
   setPurchasedPass,
   clearPurchasedPass,
+  clearActiveParticipant,
   setActiveParticipant,
 } from '../../services/sessionService';
 
-/**
- * Grand Celebration Birthday Cracker / Fireworks Cannon Engine
- * Multi-stage synchronized party crackers, starburst explosions, and cascading confetti rain
- */
-export const triggerCelebrationCrackers = () => {
-  try {
-    // Stage 1: Dual corner birthday party poppers firing simultaneously
-    confetti({
-      particleCount: 95,
-      angle: 60,
-      spread: 70,
-      origin: { x: 0.1, y: 0.85 },
-      colors: ['#00f0ff', '#146ef5', '#fbbf24', '#f43f5e', '#a855f7', '#10b981'],
-      startVelocity: 55,
-      ticks: 250,
-    });
-    confetti({
-      particleCount: 95,
-      angle: 120,
-      spread: 70,
-      origin: { x: 0.9, y: 0.85 },
-      colors: ['#00f0ff', '#146ef5', '#fbbf24', '#f43f5e', '#a855f7', '#10b981'],
-      startVelocity: 55,
-      ticks: 250,
-    });
-
-    // Stage 2: Central starburst cracker fireworks explosion
-    setTimeout(() => {
-      confetti({
-        particleCount: 120,
-        spread: 110,
-        origin: { x: 0.5, y: 0.4 },
-        shapes: ['star', 'circle'],
-        colors: ['#fbbf24', '#f59e0b', '#00f0ff', '#10b981', '#ffffff'],
-        scalar: 1.25,
-        startVelocity: 48,
-        ticks: 280,
-      });
-    }, 280);
-
-    // Stage 3: Second volley of angled corner cannons
-    setTimeout(() => {
-      confetti({
-        particleCount: 80,
-        angle: 50,
-        spread: 80,
-        origin: { x: 0.15, y: 0.8 },
-        colors: ['#00f0ff', '#10b981', '#fbbf24', '#ec4899', '#ffffff'],
-        startVelocity: 60,
-        ticks: 250,
-      });
-      confetti({
-        particleCount: 80,
-        angle: 130,
-        spread: 80,
-        origin: { x: 0.85, y: 0.8 },
-        colors: ['#00f0ff', '#10b981', '#fbbf24', '#ec4899', '#ffffff'],
-        startVelocity: 60,
-        ticks: 250,
-      });
-    }, 650);
-
-    // Stage 4: Cascading festive golden stars falling from top
-    setTimeout(() => {
-      confetti({
-        particleCount: 90,
-        spread: 140,
-        origin: { x: 0.5, y: 0.12 },
-        shapes: ['star'],
-        colors: ['#fbbf24', '#ffffff', '#00f0ff'],
-        scalar: 1.15,
-        ticks: 360,
-        gravity: 0.75,
-      });
-    }, 1200);
-  } catch (err) {
-    console.error('Celebration cracker error:', err);
-  }
-};
-
-export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
+export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub, onOpenDashboard }) => {
   const [step, setStep] = useState(1); // 1: Student Details, 2: UPI Payment, 3: Proof & Submit, 4: Confirmation
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [copiedWhatsapp, setCopiedWhatsapp] = useState(false);
@@ -103,12 +24,13 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
   const [formData, setFormData] = useState({
     name: '',
     roll: '',
-    college: 'Raghu Engineering College',
+    college: '',
     branch: '',
     year: '3rd Year',
-    location: 'Visakhapatnam',
+    location: '',
     phone: '',
     email: '',
+    password: '',
   });
 
   // Payment Proof State
@@ -118,16 +40,22 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
     previewUrl: '',
   });
 
-  // Check persistent 3-week session when modal opens
+  // Reset to Step 1 whenever registration modal opens
   useEffect(() => {
     if (isOpen) {
-      const pass = getPurchasedPass();
-      setExistingPass(pass);
+      setStep(1);
       setErrors({});
+      setSubmissionResult(null);
+      setExistingPass(getPurchasedPass());
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  // Auto-fire celebration cracker burst when Step 4 mounts
+  useEffect(() => {
+    if (isOpen && step === 4) {
+      triggerCelebrationCrackers();
+    }
+  }, [isOpen, step]);
 
   // Step 1 -> Step 2
   const handleProceedToPayment = (e) => {
@@ -191,6 +119,7 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
           year: formData.year,
           location: formData.location,
           roll: formData.roll,
+          password: formData.password,
           utr: proofData.utr,
           purchasedAt: new Date().toISOString(),
         };
@@ -211,13 +140,6 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
     }
   };
 
-  // Auto-fire celebration cracker burst when Step 4 mounts
-  useEffect(() => {
-    if (step === 4) {
-      triggerCelebrationCrackers();
-    }
-  }, [step]);
-
   const copyUpiId = () => {
     navigator.clipboard.writeText(CONFIG.UPI_ID);
     setCopiedUpi(true);
@@ -230,6 +152,8 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
     setTimeout(() => setCopiedWhatsapp(false), 2500);
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -241,11 +165,7 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div>
             <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: '#ffffff', margin: 0 }}>
-              {existingPass && step !== 4
-                ? 'PASS ALREADY SECURED'
-                : step === 4
-                ? 'REGISTRATION CONFIRMED'
-                : 'ALL-IN-ONE REGISTRATION'}
+              {step === 4 ? 'REGISTRATION CONFIRMED' : 'DELEGATE REGISTRATION & PAYMENT'}
             </h3>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--accent-cyan)' }}>
               FOUNDRIX 2026 • ₹799 ALL-INCLUSIVE PASS
@@ -269,233 +189,41 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
           </button>
         </div>
 
-        {/* 1 ACCOUNT PER PHONE POLICY SCREEN */}
-        {existingPass && step !== 4 && (
-          <div style={{ textAlign: 'center', padding: '10px 0' }}>
-            {/* Policy Badge */}
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 16px',
-                borderRadius: 'var(--radius-full)',
-                backgroundColor: 'rgba(239, 68, 68, 0.12)',
-                border: '1px solid rgba(239, 68, 68, 0.4)',
-                color: '#f87171',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                marginBottom: '16px',
-              }}
-            >
-              <ShieldCheck size={16} color="#f87171" />
-              <span>1 ACCOUNT PER PHONE POLICY</span>
-            </div>
-
-            <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: '#ffffff', marginBottom: '10px' }}>
-              PASS ALREADY SECURED FOR THIS DEVICE
-            </h4>
-
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: '1.6', maxWidth: '500px', margin: '0 auto 22px auto' }}>
-              You already have an active <strong>Foundrix 2026 Pass</strong> registered on this device.
-              To prevent accidental duplicate ₹799 payments and ensure fair hackathon allocations, each phone is limited to 1 pass.
-            </p>
-
-            {/* Existing Pass Details Card */}
-            <div
-              style={{
-                background: 'rgba(20, 110, 245, 0.08)',
-                border: '1px solid var(--accent-cyan)',
-                borderRadius: 'var(--radius-md)',
-                padding: '20px',
-                maxWidth: '460px',
-                margin: '0 auto 22px auto',
-                textAlign: 'left',
-                boxShadow: '0 0 30px rgba(0, 240, 255, 0.12)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '12px' }}>
-                <div>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>
-                    REGISTRATION ID
-                  </span>
-                  <div style={{ fontSize: '1.3rem', fontFamily: 'var(--font-mono)', color: '#ffffff', fontWeight: '800' }}>
-                    {existingPass.regId}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '4px 10px',
-                    borderRadius: 'var(--radius-full)',
-                    backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                    border: '1px solid #10b981',
-                    color: '#10b981',
-                    fontSize: '0.74rem',
-                    fontWeight: '700',
-                  }}
-                >
-                  <CheckCircle2 size={13} />
-                  <span>PAYMENT SUBMITTED</span>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', fontSize: '0.84rem' }}>
-                <div>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', display: 'block' }}>DELEGATE NAME</span>
-                  <strong style={{ color: '#ffffff' }}>{existingPass.name || 'Participant'}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', display: 'block' }}>PHONE NUMBER</span>
-                  <strong style={{ color: '#ffffff' }}>{existingPass.phone || '—'}</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', display: 'block' }}>INSTITUTION</span>
-                  <span style={{ color: 'var(--text-secondary)' }}>{existingPass.college || 'Raghu Engg College'}</span>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', display: 'block' }}>UTR / REF ID</span>
-                  <code style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem' }}>{existingPass.utr || 'Verified'}</code>
-                </div>
-              </div>
-
-              {existingPass.iitDelhiEligible && (
-                <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '8px', color: '#fbbf24', fontSize: '0.8rem' }}>
-                  <Sparkles size={14} />
-                  <span>Early Bird: Qualified for <strong>E-Cell IIT Delhi Certificate</strong></span>
-                </div>
-              )}
-            </div>
-
-            {/* Primary Next Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '460px', margin: '0 auto 20px auto' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenHackathonHub();
-                }}
-                className="btn-border-beam"
-                style={{ width: '100%', padding: '14px' }}
-              >
-                <span>OPEN HACKATHON TEAM HUB</span>
-                <ArrowRight size={18} />
-              </button>
-
-              <a
-                href={CONFIG.WHATSAPP_GROUP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '13px 18px',
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: '#25d366',
-                  color: '#07090f',
-                  fontWeight: '800',
-                  fontSize: '0.88rem',
-                  letterSpacing: '0.04em',
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 18px rgba(37, 211, 102, 0.35)',
-                }}
-              >
-                <MessageCircle size={18} fill="#07090f" />
-                <span>JOIN DELEGATES WHATSAPP GROUP</span>
-                <ExternalLink size={16} />
-              </a>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSubmissionResult(existingPass);
-                  setStep(4);
-                }}
-                className="btn-ghost-cyan"
-                style={{ width: '100%', padding: '12px' }}
-              >
-                <FileText size={16} />
-                <span>View Full Receipt & Fireworks Celebration</span>
-              </button>
-            </div>
-
-            {/* Reset / Register Another Delegate option */}
-            <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Need to register another person or friend from this phone?
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  if (window.confirm('Do you want to register another pass for a different person? Your previous pass record remains safely saved in Google Sheets.')) {
-                    clearPurchasedPass();
-                    setExistingPass(null);
-                    setSubmissionResult(null);
-                    setFormData({
-                      name: '',
-                      roll: '',
-                      college: 'Raghu Engineering College',
-                      branch: '',
-                      year: '3rd Year',
-                      location: 'Visakhapatnam',
-                      phone: '',
-                      email: '',
-                    });
-                    setProofData({ utr: '', screenshot: null, previewUrl: '' });
-                    setStep(1);
-                  }
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--accent-cyan)',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  marginLeft: '8px',
-                  textDecoration: 'underline',
-                }}
-              >
-                Register Another Delegate Pass →
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Step Indicator (Steps 1 to 3) */}
-        {!existingPass && step < 4 && (
+        {step < 4 && (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              marginBottom: '28px',
-              paddingBottom: '16px',
+              marginBottom: '24px',
+              paddingBottom: '14px',
               borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
             {[
-              { num: 1, label: 'Student Details' },
-              { num: 2, label: 'Scan & Pay' },
-              { num: 3, label: 'Proof & UTR' },
+              { num: 1, label: '1. Student Details' },
+              { num: 2, label: '2. Scan & Pay' },
+              { num: 3, label: '3. Proof & UTR' },
             ].map((s) => (
               <div
                 key={s.num}
+                onClick={() => setStep(s.num)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  color: step >= s.num ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                  color: step === s.num ? 'var(--accent-cyan)' : step > s.num ? '#ffffff' : 'var(--text-muted)',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.78rem',
                   fontWeight: step === s.num ? '700' : '500',
+                  cursor: 'pointer',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  backgroundColor: step === s.num ? 'rgba(20, 110, 245, 0.15)' : 'transparent',
+                  transition: 'all 0.2s ease',
                 }}
+                title={`Click to switch to ${s.label}`}
               >
                 <div
                   style={{
@@ -519,8 +247,72 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
         )}
 
         {/* STEP 1: STUDENT DETAILS */}
-        {!existingPass && step === 1 && (
+        {step === 1 && (
           <form onSubmit={handleProceedToPayment}>
+            {/* Active Pass Banner (if delegate already bought a pass on this device) */}
+            {existingPass && (existingPass.regId || existingPass.name) && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'rgba(20, 110, 245, 0.12)',
+                  border: '1px solid rgba(0, 240, 255, 0.3)',
+                  marginBottom: '18px',
+                  gap: '10px',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <div style={{ fontSize: '0.82rem', color: '#e2e8f0' }}>
+                  <span style={{ color: 'var(--accent-cyan)', fontWeight: '700' }}>Active Pass on Device:</span>{' '}
+                  {existingPass.regId || 'Pass Available'} ({existingPass.name})
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      if (onOpenDashboard) onOpenDashboard();
+                    }}
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid var(--accent-cyan)',
+                      color: 'var(--accent-cyan)',
+                      borderRadius: '4px',
+                      padding: '4px 10px',
+                      fontSize: '0.74rem',
+                      cursor: 'pointer',
+                      fontWeight: '700',
+                    }}
+                  >
+                    VIEW PASS
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearPurchasedPass();
+                      clearActiveParticipant();
+                      setExistingPass(null);
+                    }}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#ffffff',
+                      borderRadius: '4px',
+                      padding: '4px 10px',
+                      fontSize: '0.74rem',
+                      cursor: 'pointer',
+                    }}
+                    title="Clear previous session to register fresh"
+                  >
+                    Clear Session
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '16px', marginBottom: '20px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
@@ -574,7 +366,7 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
                   type="text"
                   value={formData.college}
                   onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                  placeholder="e.g. Raghu Engineering College"
+                  placeholder="e.g. Enter College Name"
                   style={{
                     width: '100%',
                     padding: '12px 14px',
@@ -636,13 +428,13 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
-                  Location / City *
+                  Nearest Bus Stop Location *
                 </label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="e.g. Visakhapatnam, Vizianagaram"
+                  placeholder="e.g. Anandapuram, Tagarapuvalasa, RTC Complex, Madhurawada"
                   style={{
                     width: '100%',
                     padding: '12px 14px',
@@ -700,17 +492,57 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
                 />
                 {errors.email && <span style={{ color: '#ef4444', fontSize: '0.72rem' }}>{errors.email}</span>}
               </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                  Create Password (for Dashboard Login) *
+                </label>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Create a password (min 4 characters)"
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: errors.password ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff',
+                    fontSize: '0.9rem',
+                  }}
+                />
+                {errors.password && <span style={{ color: '#ef4444', fontSize: '0.72rem' }}>{errors.password}</span>}
+              </div>
             </div>
 
             <button type="submit" className="btn-border-beam" style={{ width: '100%', padding: '16px' }}>
               <span>PROCEED TO UPI PAYMENT (₹799)</span>
               <ArrowRight size={18} />
             </button>
+
+            <div style={{ textAlign: 'center', marginTop: '14px' }}>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--accent-cyan)',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                Skip to UPI Payment QR (Scan & Pay) →
+              </button>
+            </div>
           </form>
         )}
 
         {/* STEP 2: UPI PAYMENT QR */}
-        {!existingPass && step === 2 && (
+        {step === 2 && (
           <div style={{ textAlign: 'center' }}>
             <div
               style={{
@@ -808,7 +640,7 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
         )}
 
         {/* STEP 3: PROOF & UTR SUBMISSION */}
-        {!existingPass && step === 3 && (
+        {step === 3 && (
           <form onSubmit={handleSubmitPayment}>
             {/* UTR Input */}
             <div style={{ marginBottom: '20px' }}>
@@ -1212,12 +1044,16 @@ export const RegistrationModal = ({ isOpen, onClose, onOpenHackathonHub }) => {
                   onClick={() => {
                     setStep(1);
                     onClose();
-                    onOpenHackathonHub();
+                    if (onOpenDashboard) {
+                      onOpenDashboard(activeSubmission);
+                    } else {
+                      onOpenHackathonHub();
+                    }
                   }}
                   className="btn-border-beam"
                   style={{ flex: 2, padding: '14px' }}
                 >
-                  <span>OPEN HACKATHON TEAM HUB</span>
+                  <span>GO TO ATTENDEE DASHBOARD</span>
                   <ArrowRight size={18} />
                 </button>
               </div>

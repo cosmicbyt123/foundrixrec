@@ -120,7 +120,7 @@ export const FlipClock = ({ targetDate = '2026-10-09T09:00:00+05:30' }) => {
             textTransform: 'uppercase',
           }}
         >
-          EVENT COUNTDOWN • OCT 9–10, 2026
+          EVENT COUNTDOWN
         </span>
       </div>
 

@@ -1,76 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import { Award, TrendingUp, Users, Terminal, ArrowUpRight } from 'lucide-react';
 
 /**
- * FOUNDRIX 2026 — Executive Entrepreneurship & Tech Summit Loader
- * Designed with the prestige and architectural rigor of Y Combinator Demo Day,
- * TechCrunch Disrupt, and Tier-1 Collegiate Entrepreneurship Summits (IIT / Stanford E-Cell).
- *
- * Core Narrative:
- * 1. Founder Acceleration Sequence: IDEATE -> VALIDATE -> BUILD SPRINT -> PITCH -> FOUNDRIX
- * 2. Precision Telemetry: Real-time venture stats (Seed Pool, E-Cell IIT Delhi, Delegates)
- * 3. Minimalist, high-contrast, obsidian typography with ZERO nightclub/rave glows
+ * Modern Entrepreneurship Summit Preloader
+ * 1. Fast Cycling Words (Phase 1):
+ *    - INNOVATE
+ *    - BUILD SPRINT
+ *    - REC CAMPUS
+ *    - LIVE PITCH
+ *    - FOUNDRIX
+ * 2. Main Locked Wordmark (Phase 2 & 3):
+ *    - FOUNDRIX (Clean solid white, zero '@' or glitch characters)
+ *    - Subtitle: THE FLAGSHIP TECH SUMMIT • 2026
+ * 3. High-velocity curtain slide-up reveal
  */
 
-const VENTURE_PILLARS = [
-  { step: '01', label: 'IDEATE', subtitle: 'Problem Validation & Market Research' },
-  { step: '02', label: 'BUILD', subtitle: 'Rapid Prototype & Hackathon Sprint' },
-  { step: '03', label: 'PITCH', subtitle: 'Live Jury & Angel Evaluation' },
-  { step: '04', label: 'SCALE', subtitle: 'Incubation & Seed Pathway' },
-];
-
 export const CinematicLoader = ({ onComplete }) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [isFinalLock, setIsFinalLock] = useState(false);
+  const cyclingWords = [
+    'INNOVATE',
+    'BUILD SPRINT',
+    'REC CAMPUS',
+    'LIVE PITCH',
+    'FOUNDRIX',
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    // Smooth progress counter from 0 to 100%
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        // Accelerate smoothly
-        const increment = prev < 70 ? 2.5 : 4;
-        return Math.min(100, Math.floor(prev + increment));
-      });
-    }, 45);
+    // Phase 1: Fast cycling through the words
+    let intervalId;
+    let wordIndex = 0;
 
-    // Step cycler (Ideate -> Build -> Pitch -> Scale)
-    const stepInterval = setInterval(() => {
-      setCurrentStep((prev) => {
-        if (prev < VENTURE_PILLARS.length - 1) {
-          return prev + 1;
-        }
-        clearInterval(stepInterval);
-        setIsFinalLock(true);
-        return prev;
-      });
-    }, 450);
+    intervalId = setInterval(() => {
+      wordIndex += 1;
+      if (wordIndex < cyclingWords.length) {
+        setCurrentIndex(wordIndex);
+      } else {
+        // Phase 2: Lock onto FOUNDRIX
+        clearInterval(intervalId);
+        setIsLocked(true);
 
-    return () => {
-      clearInterval(progressInterval);
-      clearInterval(stepInterval);
-    };
-  }, []);
+        // Phase 3: Hold locked wordmark & subtitle, then slide up curtain
+        const exitTimer = setTimeout(() => {
+          setIsExiting(true);
+          const completeTimer = setTimeout(() => {
+            if (onComplete) onComplete();
+          }, 750);
+          return () => clearTimeout(completeTimer);
+        }, 900);
 
-  // When progress reaches 100% and final brandmark locks, initiate clean exit curtain
-  useEffect(() => {
-    if (progress === 100 && isFinalLock) {
-      const exitTimer = setTimeout(() => {
-        setIsExiting(true);
-        const completeTimer = setTimeout(() => {
-          if (onComplete) onComplete();
-        }, 750);
-        return () => clearTimeout(completeTimer);
-      }, 500);
+        return () => clearTimeout(exitTimer);
+      }
+    }, 220); // Snappy 220ms per word
 
-      return () => clearTimeout(exitTimer);
-    }
-  }, [progress, isFinalLock, onComplete]);
+    return () => clearInterval(intervalId);
+  }, [onComplete]);
 
   // Click anywhere to skip instantly
   const handleSkip = () => {
@@ -80,7 +65,7 @@ export const CinematicLoader = ({ onComplete }) => {
     }, 350);
   };
 
-  const activePillar = VENTURE_PILLARS[currentStep];
+  const currentDisplayWord = cyclingWords[currentIndex];
 
   return (
     <div
@@ -90,16 +75,10 @@ export const CinematicLoader = ({ onComplete }) => {
         inset: 0,
         zIndex: 99999,
         backgroundColor: '#06070a',
-        backgroundImage: `
-          radial-gradient(ellipse 80% 50% at 50% -10%, rgba(20, 110, 245, 0.15), transparent 70%),
-          linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px)
-        `,
-        backgroundSize: '100% 100%, 48px 48px, 48px 48px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: 'clamp(20px, 4.5vw, 44px)',
+        padding: 'clamp(20px, 4vw, 48px)',
         overflow: 'hidden',
         cursor: 'pointer',
         transform: isExiting ? 'translateY(-100%)' : 'translateY(0)',
@@ -107,62 +86,56 @@ export const CinematicLoader = ({ onComplete }) => {
         willChange: 'transform',
       }}
     >
-      {/* 1. Executive Top Header Bar */}
+      {/* Top Header Row */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '100%',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          paddingBottom: '14px',
           opacity: isExiting ? 0 : 1,
           transition: 'opacity 0.25s ease',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div
+          <span
             style={{
-              width: '6px',
-              height: '6px',
+              display: 'inline-block',
+              width: '8px',
+              height: '8px',
               borderRadius: '50%',
-              backgroundColor: '#10b981',
-              boxShadow: '0 0 8px #10b981',
+              backgroundColor: '#ffffff',
+              boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)',
             }}
           />
           <span
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: 'clamp(0.7rem, 1.4vw, 0.78rem)',
+              fontSize: '0.8rem',
               letterSpacing: '0.12em',
-              color: 'rgba(255, 255, 255, 0.8)',
-              fontWeight: '600',
+              color: 'rgba(255, 255, 255, 0.75)',
               textTransform: 'uppercase',
             }}
           >
-            E-CELL REC × INITIATIVE 2026
+            RAGHU ENGINEERING COLLEGE
           </span>
         </div>
 
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
             fontFamily: 'var(--font-mono)',
-            fontSize: 'clamp(0.7rem, 1.4vw, 0.78rem)',
-            color: 'var(--accent-cyan)',
-            letterSpacing: '0.1em',
+            fontSize: '0.8rem',
+            letterSpacing: '0.12em',
+            color: '#ffffff',
+            fontWeight: '600',
             textTransform: 'uppercase',
           }}
         >
-          <span>OCTOBER 9–10</span>
-          <span style={{ color: 'rgba(255, 255, 255, 0.2)' }}>•</span>
-          <span style={{ color: '#ffffff' }}>VISAKHAPATNAM</span>
+          FOUNDRIX 2026
         </div>
       </div>
 
-      {/* 2. Main Centerpiece: Authoritative Entrepreneurship Wordmark */}
+      {/* Center Stage: Wordmark & Cycling */}
       <div
         style={{
           position: 'relative',
@@ -171,237 +144,113 @@ export const CinematicLoader = ({ onComplete }) => {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          maxWidth: '980px',
           margin: 'auto',
-          textAlign: 'center',
+          transform: isExiting ? 'translateY(-30px) scale(0.96)' : 'translateY(0) scale(1)',
+          transition: 'transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.4s ease',
           opacity: isExiting ? 0 : 1,
-          transform: isExiting ? 'translateY(-20px)' : 'translateY(0)',
-          transition: 'all 0.5s ease',
         }}
       >
-        {/* Crisp Founder Phase Tag */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '6px 16px',
-            borderRadius: 'var(--radius-full)',
-            background: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            marginBottom: '20px',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.72rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: '700',
-            }}
-          >
-            PHASE {activePillar.step}
-          </span>
-          <span style={{ color: 'rgba(255, 255, 255, 0.3)' }}>|</span>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.74rem',
-              color: '#ffffff',
-              letterSpacing: '0.12em',
-              fontWeight: '600',
-              textTransform: 'uppercase',
-            }}
-          >
-            {activePillar.label} — {activePillar.subtitle}
-          </span>
-        </div>
-
-        {/* Monumental, Clean White Typography (No neon glow, no club outlines) */}
+        {/* Main Central Typography */}
         <h1
+          key={currentDisplayWord}
           style={{
             fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(4.8rem, 16vw, 11rem)',
+            fontSize:
+              currentDisplayWord === 'FOUNDRIX'
+                ? 'clamp(5rem, 16vw, 12.5rem)'
+                : 'clamp(3.8rem, 12vw, 9rem)',
             fontWeight: '900',
-            lineHeight: '0.88',
-            letterSpacing: '0.03em',
+            lineHeight: '0.9',
+            letterSpacing: '0.04em',
             color: '#ffffff',
             textTransform: 'uppercase',
             margin: 0,
-            textShadow: '0 4px 30px rgba(0, 0, 0, 0.9)',
+            textAlign: 'center',
             userSelect: 'none',
+            textShadow: '0 4px 30px rgba(0, 0, 0, 0.95)',
+            animation: 'wordPop 0.22s ease-out forwards',
           }}
         >
-          FOUNDRIX
+          {currentDisplayWord}
         </h1>
 
-        {/* Authoritative Summit Tagline */}
+        {/* Phase 2 & 3 Subtitle: Revealed when locked on FOUNDRIX */}
         <div
           style={{
-            marginTop: '10px',
+            marginTop: '18px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'clamp(0.75rem, 1.6vw, 1.05rem)',
+            fontWeight: '700',
+            letterSpacing: '0.22em',
+            color: 'rgba(255, 255, 255, 0.9)',
+            textTransform: 'uppercase',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
             gap: '12px',
-            flexWrap: 'wrap',
+            opacity: isLocked ? 1 : 0,
+            transform: isLocked ? 'translateY(0)' : 'translateY(10px)',
+            transition: 'opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <span
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 'clamp(0.85rem, 1.8vw, 1.15rem)',
-              fontWeight: '700',
-              letterSpacing: '0.18em',
-              color: 'rgba(255, 255, 255, 0.95)',
-              textTransform: 'uppercase',
-            }}
-          >
-            THE ENTREPRENEURSHIP & TECHNOLOGY SUMMIT
-          </span>
-          <span
-            style={{
-              padding: '2px 8px',
-              borderRadius: '4px',
-              background: '#146ef5',
-              color: '#ffffff',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.72rem',
-              fontWeight: '800',
-              letterSpacing: '0.08em',
-            }}
-          >
-            2026
-          </span>
-        </div>
-
-        {/* Minimalist Subtext */}
-        <p
-          style={{
-            marginTop: '10px',
-            color: 'var(--text-muted)',
-            fontSize: 'clamp(0.75rem, 1.4vw, 0.88rem)',
-            fontFamily: 'var(--font-mono)',
-            letterSpacing: '0.06em',
-            maxWidth: '560px',
-          }}
-        >
-          WHERE STUDENT INNOVATORS VALIDATE, BUILD & SCALE VENTURES
-        </p>
-
-        {/* Precision Progress Bar + Percentage */}
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '380px',
-            marginTop: '28px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '8px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.72rem',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <span>INITIALIZING SUMMIT STAGE</span>
-            <span style={{ color: '#ffffff', fontWeight: '700' }}>{progress}%</span>
-          </div>
-
-          <div
-            style={{
-              width: '100%',
-              height: '3px',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '999px',
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                width: `${progress}%`,
-                height: '100%',
-                backgroundColor: '#146ef5',
-                boxShadow: '0 0 8px rgba(20, 110, 245, 0.8)',
-                transition: 'width 0.1s linear',
-              }}
-            />
-          </div>
+          <span>THE FLAGSHIP TECH SUMMIT</span>
+          <span style={{ color: 'rgba(255, 255, 255, 0.35)' }}>•</span>
+          <span style={{ color: '#ffffff' }}>2026</span>
         </div>
       </div>
 
-      {/* 3. Bottom Telemetry Grid: Serious Entrepreneurship Accreditations */}
+      {/* Bottom Footer Row: Click to Enter */}
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          gap: '14px',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           width: '100%',
           opacity: isExiting ? 0 : 1,
           transition: 'opacity 0.25s ease',
-          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-          paddingTop: '16px',
         }}
       >
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
-            gap: '12px',
-            width: '100%',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.72rem',
+            color: 'rgba(255, 255, 255, 0.4)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
           }}
         >
-          {/* Stat 1 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Award size={15} color="var(--accent-cyan)" />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-              Certified: <strong>E-Cell IIT Delhi</strong>
-            </span>
-          </div>
+          OCTOBER 9 & 10 • VISAKHAPATNAM
+        </div>
 
-          {/* Stat 2 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <TrendingUp size={15} color="#10b981" />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-              Seed & Cash Pool: <strong>₹1,00,000+</strong>
-            </span>
-          </div>
-
-          {/* Stat 3 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Users size={15} color="#60a5fa" />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-              Sprint: <strong>Online Hackathon + Pitch</strong>
-            </span>
-          </div>
-
-          {/* Skip prompt button */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.7rem',
-                color: 'rgba(255, 255, 255, 0.5)',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                padding: '6px 14px',
-                borderRadius: '999px',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-              }}
-            >
-              <span>ENTER SUMMIT</span>
-              <ArrowUpRight size={13} />
-            </div>
-          </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.75rem',
+            color: 'rgba(255, 255, 255, 0.65)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            padding: '7px 16px',
+            borderRadius: '999px',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          CLICK TO ENTER ↗
         </div>
       </div>
+
+      <style>{`
+        @keyframes wordPop {
+          0% {
+            opacity: 0.3;
+            transform: scale(0.97);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
     </div>
   );
 };

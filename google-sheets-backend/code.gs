@@ -48,6 +48,22 @@ const SHEET_HACKATHON_PRESENT = 'HACKATHON TEAMS PRESENT';
 
 const DRIVE_FOLDER_NAME = 'FOUNDRIX_2026_Payment_Screenshots';
 const SPECIFIC_FOLDER_ID = ''; // Optional: Paste a shared Google Drive Folder ID if desired
+const SPREADSHEET_ID = ''; // Optional fallback: Paste your Google Sheet ID here if running as Standalone Script (script.google.com)
+
+/**
+ * Resolves the Google Spreadsheet (bound or standalone fallback)
+ */
+function getSpreadsheet() {
+  let ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss && SPREADSHEET_ID) {
+    try {
+      ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    } catch (e) {
+      Logger.log('Could not open spreadsheet by ID: ' + e.toString());
+    }
+  }
+  return ss;
+}
 
 // Email Configuration
 const SENDER_NAME = 'FOUNDRIX 2026 Organizing Team';
@@ -304,14 +320,22 @@ function saveScreenshotFile(base64Data, participationId, studentName, utr) {
  */
 function doPost(e) {
   try {
-    const rawData = e.postData ? e.postData.contents : '';
-    if (!rawData) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Empty payload received' }))
-        .setMimeType(ContentService.MimeType.JSON);
+    if (!e || !e.postData || !e.postData.contents) {
+      return ContentService.createTextOutput(JSON.stringify({ 
+        success: false, 
+        error: 'No POST data received. Note: doPost(e) cannot be executed by clicking "Run" inside Google Apps Script editor because event parameter "e" is undefined. Please deploy as Web App or execute testDoPost() to test.' 
+      })).setMimeType(ContentService.MimeType.JSON);
     }
 
+    const rawData = e.postData.contents;
     const payload = JSON.parse(rawData);
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = getSpreadsheet();
+    if (!ss) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: false,
+        error: 'Spreadsheet not found. Please ensure this script is opened via Extensions > Apps Script inside your Google Sheet, or set SPREADSHEET_ID at line 51 in code.gs.'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
 
     // CASE A: Team Creation / Team Sync from Hackathon Hub
     if (payload.action === 'create_team' || payload.action === 'join_team' || payload.action === 'team_sync' || (payload.teamId && payload.teamName && !payload.utr)) {
@@ -347,6 +371,71 @@ function doPost(e) {
         success: true,
         message: 'Team synchronized successfully',
         team: teamObj
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // CASE A.2: Attendance Check-In from Scanner App
+    if (payload.action === 'mark_attendance' || payload.action === 'batch_attendance') {
+      const idsToMark = payload.ids || (payload.id ? [payload.id] : []);
+      const timeStr = Utilities.formatDate(new Date(), 'Asia/Kolkata', 'yyyy-MM-dd HH:mm:ss');
+
+      let rawSheet = ss.getSheetByName(SHEET_RAW);
+      let partSheet = ss.getSheetByName(SHEET_PARTICIPANTS);
+      let markedCount = 0;
+      let results = [];
+
+      if (rawSheet && idsToMark.length > 0) {
+        // Ensure column 16 exists for Attendance
+        if (rawSheet.getLastColumn() < 16) {
+          rawSheet.getRange(1, 16).setValue('Attendance')
+            .setBackground('#003566').setFontColor('#ffd60a').setFontWeight('bold');
+        }
+
+        const data = rawSheet.getDataRange().getValues();
+        const cleanIds = idsToMark.map(id => String(id).trim().toUpperCase());
+
+        for (let i = 1; i < data.length; i++) {
+          const rowPartId = String(data[i][COL_PARTICIPATION_ID - 1]).trim().toUpperCase();
+          const rowRoll = String(data[i][COL_ROLL - 1]).trim().toUpperCase();
+          const rowPhone = String(data[i][COL_PHONE - 1]).replace(/\D/g, '');
+
+          const matched = cleanIds.some(target => 
+            target === rowPartId || target === rowRoll || (target.length >= 10 && rowPhone.endsWith(target))
+          );
+
+          if (matched) {
+            rawSheet.getRange(i + 1, 16).setValue('Present (' + timeStr + ')')
+              .setBackground('#d4edda').setFontColor('#155724').setFontWeight('bold');
+            markedCount++;
+            results.push({ id: rowPartId, name: data[i][COL_NAME - 1], roll: rowRoll, status: 'Marked Present' });
+          }
+        }
+      }
+
+      // Also update PARTICIPANT LIST column 9 if present
+      if (partSheet && idsToMark.length > 0) {
+        if (partSheet.getLastColumn() < 9) {
+          partSheet.getRange(1, 9).setValue('Attendance')
+            .setBackground('#1b263b').setFontColor('#00f0ff').setFontWeight('bold');
+        }
+        const pData = partSheet.getDataRange().getValues();
+        const cleanIds = idsToMark.map(id => String(id).trim().toUpperCase());
+        for (let i = 1; i < pData.length; i++) {
+          const pId = String(pData[i][1]).trim().toUpperCase();
+          const pRoll = String(pData[i][4]).trim().toUpperCase();
+          if (cleanIds.includes(pId) || cleanIds.includes(pRoll)) {
+            partSheet.getRange(i + 1, 9).setValue('Present (' + timeStr + ')')
+              .setBackground('#d4edda').setFontColor('#155724').setFontWeight('bold');
+          }
+        }
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        message: 'Successfully marked attendance for ' + markedCount + ' attendees.',
+        markedCount: markedCount,
+        markedAt: timeStr,
+        results: results
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -452,7 +541,13 @@ function doPost(e) {
 function doGet(e) {
   try {
     const action = (e && e.parameter && e.parameter.action) || 'stats';
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = getSpreadsheet();
+    if (!ss) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: false,
+        error: 'Spreadsheet not found. Please ensure this script is opened via Extensions > Apps Script inside your Google Sheet, or set SPREADSHEET_ID at line 51 in code.gs.'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
     const sheet = ss.getSheetByName(SHEET_RAW);
 
     if (action === 'stats') {
@@ -469,7 +564,7 @@ function doGet(e) {
     }
 
     if (action === 'lookup') {
-      const query = (e.parameter.query || '').trim().toLowerCase();
+      const query = (e && e.parameter && e.parameter.query ? e.parameter.query : '').trim().toLowerCase();
       if (!query || !sheet) {
         return ContentService.createTextOutput(JSON.stringify({ success: false, found: false }))
           .setMimeType(ContentService.MimeType.JSON);
@@ -509,24 +604,85 @@ function doGet(e) {
     }
 
     if (action === 'sync_team') {
-      const teamRaw = e.parameter.team;
+      const teamRaw = e && e.parameter && e.parameter.team;
       if (teamRaw) {
         let teamObj = null;
         try {
           teamObj = JSON.parse(decodeURIComponent(teamRaw));
         } catch(pErr) {
-          teamObj = JSON.parse(teamRaw);
+          teamObj = null;
         }
-        updateHackathonTeamSheet(ss, teamObj);
-        return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Team synced to Google Sheet successfully', team: teamObj }))
+        if (teamObj) {
+          updateHackathonTeamSheet(ss, teamObj);
+          return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Team synced to Google Sheet successfully', team: teamObj }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Invalid team payload' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === 'send_otp') {
+      const email = (e && e.parameter && e.parameter.email ? e.parameter.email : '').trim().toLowerCase();
+      if (!email) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Email is required' }))
           .setMimeType(ContentService.MimeType.JSON);
       }
+      const otp = String(Math.floor(100000 + Math.random() * 900000));
+      const props = PropertiesService.getScriptProperties();
+      props.setProperty('OTP_' + email, JSON.stringify({ otp: otp, expiresAt: Date.now() + 15 * 60 * 1000 }));
+
+      try {
+        MailApp.sendEmail({
+          to: email,
+          subject: 'FOUNDRIX 2026 — Password Reset Verification Code: ' + otp,
+          htmlBody: `
+            <div style="font-family: Arial, sans-serif; background-color: #060a14; color: #ffffff; padding: 30px; border-radius: 12px;">
+              <h2 style="color: #00f0ff; margin-bottom: 8px;">FOUNDRIX 2026 • Password Reset Code</h2>
+              <p style="color: #cbd5e1; font-size: 15px;">You requested a verification code to access your FOUNDRIX Attendee Dashboard.</p>
+              <div style="background: rgba(0, 240, 255, 0.1); border: 2px dashed #00f0ff; border-radius: 8px; padding: 18px; text-align: center; margin: 24px 0;">
+                <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #ffffff; font-family: monospace;">${otp}</span>
+              </div>
+              <p style="color: #94a3b8; font-size: 13px;">This code expires in 15 minutes. If you did not request this, please ignore this email.</p>
+              <p style="color: #64748b; font-size: 12px; margin-top: 20px;">Raghu Engineering College • Visakhapatnam</p>
+            </div>
+          `
+        });
+      } catch (mailErr) {
+        Logger.log('MailApp error: ' + mailErr.toString());
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Verification code sent to email' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === 'verify_otp') {
+      const email = (e && e.parameter && e.parameter.email ? e.parameter.email : '').trim().toLowerCase();
+      const code = (e && e.parameter && e.parameter.code ? e.parameter.code : '').trim();
+      const props = PropertiesService.getScriptProperties();
+      const raw = props.getProperty('OTP_' + email);
+      if (!raw) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'No verification code was requested for this email' }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+      const data = JSON.parse(raw);
+      if (Date.now() > data.expiresAt) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Verification code has expired. Please request a new one.' }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+      if (data.otp !== code) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Invalid verification code' }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: true, verified: true }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
     return ContentService.createTextOutput(JSON.stringify({ success: true, status: 'Foundrix Backend Active' }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
+    Logger.log('doGet error: ' + err.toString());
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -977,4 +1133,38 @@ function installOnEditTrigger() {
   SpreadsheetApp.getUi().alert(
     '⚡ Auto-Email Edit Trigger Installed Successfully!\n\nWhenever any team member changes "Verified" to "Yes", the script will:\n1. Check if "Email Sent" is "No".\n2. Send the confirmation email.\n3. Mark "Email Sent" as "Yes" (preventing duplicate sends).'
   );
+}
+
+// ============================================================================
+// 7. DEVELOPER TEST HELPERS (Run these in Apps Script Editor safely!)
+// ============================================================================
+
+/**
+ * Run this function from the Apps Script editor to safely test doGet!
+ */
+function testDoGet() {
+  const mockEvent = {
+    parameter: {
+      action: 'stats'
+    }
+  };
+  const result = doGet(mockEvent);
+  Logger.log('doGet test result: ' + result.getContent());
+}
+
+/**
+ * Run this function from the Apps Script editor to safely test doPost!
+ */
+function testDoPost() {
+  const mockPayload = {
+    action: 'stats_check',
+    timestamp: new Date().toISOString()
+  };
+  const mockEvent = {
+    postData: {
+      contents: JSON.stringify(mockPayload)
+    }
+  };
+  const result = doPost(mockEvent);
+  Logger.log('doPost test result: ' + result.getContent());
 }

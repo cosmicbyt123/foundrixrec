@@ -136,6 +136,17 @@ export const setPurchasedPass = (passData) => {
 };
 
 /**
+ * Updates existing pass and active participant details in session
+ */
+export const updateParticipantPass = (updates) => {
+  if (!updates) return;
+  const current = getPurchasedPass() || getActiveParticipant() || {};
+  const merged = { ...current, ...updates };
+  setPurchasedPass(merged);
+  return merged;
+};
+
+/**
  * Resets purchased pass (e.g. if registering for a different person)
  */
 export const clearPurchasedPass = () => {
@@ -153,5 +164,6 @@ export default {
   hasPurchasedPass,
   getPurchasedPass,
   setPurchasedPass,
+  updateParticipantPass,
   clearPurchasedPass,
 };

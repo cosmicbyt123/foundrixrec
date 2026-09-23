@@ -31,6 +31,7 @@ export const validateRegistrationForm = (formData) => {
   if (!formData.college?.trim()) errors.college = 'College name is required.';
   if (!formData.branch?.trim()) errors.branch = 'Please select or enter your Branch / Department.';
   if (!formData.year?.trim()) errors.year = 'Please select your Year of Study.';
+  if (!formData.location?.trim()) errors.location = 'Nearest bus stop location is required.';
 
   // Phone Validation: 10 Digits
   if (!formData.phone?.trim()) {
@@ -44,6 +45,13 @@ export const validateRegistrationForm = (formData) => {
     errors.email = 'Email address is required.';
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
     errors.email = 'Enter a valid email address.';
+  }
+
+  // Password Validation
+  if (!formData.password?.trim()) {
+    errors.password = 'Create a password (min 4 characters) to login later.';
+  } else if (formData.password.trim().length < 4) {
+    errors.password = 'Password must be at least 4 characters.';
   }
 
   return {
@@ -117,6 +125,7 @@ export const submitRegistration = async (fullData) => {
       location: fullData.location?.trim() || 'Visakhapatnam',
       phone: fullData.phone?.trim() || '',
       email: fullData.email?.trim() || '',
+      password: fullData.password || '',
       utr: fullData.utr ? fullData.utr.trim() : '',
       screenshotName,
       screenshotType,
@@ -193,6 +202,7 @@ export const submitRegistration = async (fullData) => {
         regId,
         name: payload.name,
         email: payload.email,
+        password: payload.password,
         phone: payload.phone,
         college: payload.college,
         branch: payload.branch,
@@ -664,6 +674,135 @@ export const TeamService = {
   },
 };
 
+/**
+ * Delegate Authentication & Password Verification Service
+ */
+export const AuthService = {
+  // Login with Email or Phone + Password
+  login: async (identifier, password) => {
+    const cleanId = (identifier || '').trim().toLowerCase();
+    const cleanPhone = (identifier || '').replace(/\D/g, '');
+    const cleanPass = (password || '').trim();
+
+    // 1. Check local registrations cache
+    const registrations = JSON.parse(localStorage.getItem('foundrix_local_registrations') || '[]');
+    let user = registrations.find(
+      (r) =>
+        (r.email && r.email.toLowerCase() === cleanId) ||
+        (r.phone && r.phone === cleanPhone) ||
+        (r.regId && r.regId.toLowerCase() === cleanId)
+    );
+
+    if (user) {
+      if (user.password && cleanPass && user.password !== cleanPass) {
+        return { success: false, error: 'Incorrect password. Please try again or click Forgot Password.' };
+      }
+      return { success: true, user };
+    }
+
+    // 2. If not in local cache, query Google Apps Script lookup
+    const profile = await TeamService.findProfile(cleanId || cleanPhone);
+    if (profile) {
+      return { success: true, user: profile };
+    }
+
+    return { success: false, error: 'No delegate account found with this email or phone number. Please register first.' };
+  },
+
+  // Dispatches 6-digit OTP code to registered email
+  sendOtp: async (email) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      return { success: false, error: 'Please enter a valid email address.' };
+    }
+
+    // Generate 6-digit OTP
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 min expiry
+    localStorage.setItem('foundrix_otp_' + cleanEmail, JSON.stringify({ otp, expiresAt }));
+
+    // Send via Google Apps Script MailApp if configured
+    if (CONFIG.GOOGLE_SCRIPT_URL) {
+      try {
+        fetch(`${CONFIG.GOOGLE_SCRIPT_URL}?action=send_otp&email=${encodeURIComponent(cleanEmail)}`, {
+          mode: 'no-cors',
+        });
+      } catch (err) {
+        console.warn('Google Script OTP notice:', err);
+      }
+    }
+
+    console.log(
+      `%c[FOUNDRIX 2026] Verification Code sent to ${cleanEmail}: ${otp}`,
+      'color: #00f0ff; font-weight: bold; font-size: 15px;'
+    );
+
+    return {
+      success: true,
+      otp, // available for testing/preview fallback
+      message: `A 6-digit verification code has been dispatched to ${cleanEmail}. Please check your inbox & spam.`,
+    };
+  },
+
+  // Verifies 6-digit OTP entered by user
+  verifyOtp: async (email, code) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanCode = (code || '').trim();
+
+    const storedRaw = localStorage.getItem('foundrix_otp_' + cleanEmail);
+    if (!storedRaw) {
+      return { success: false, error: 'No verification code requested or it has expired. Please request a new code.' };
+    }
+
+    try {
+      const stored = JSON.parse(storedRaw);
+      if (Date.now() > stored.expiresAt) {
+        localStorage.removeItem('foundrix_otp_' + cleanEmail);
+        return { success: false, error: 'Verification code expired. Please request a new one.' };
+      }
+
+      if (stored.otp !== cleanCode) {
+        return { success: false, error: 'Invalid verification code. Please check your email and try again.' };
+      }
+
+      // Valid OTP! Locate user account
+      const registrations = JSON.parse(localStorage.getItem('foundrix_local_registrations') || '[]');
+      let user = registrations.find((r) => r.email && r.email.toLowerCase() === cleanEmail);
+
+      if (!user) {
+        user = {
+          email: cleanEmail,
+          name: cleanEmail.split('@')[0],
+          regId: 'FDX-' + Math.floor(100 + Math.random() * 900),
+          college: 'Raghu Engineering College',
+        };
+      }
+
+      localStorage.removeItem('foundrix_otp_' + cleanEmail);
+      return { success: true, user };
+    } catch (err) {
+      return { success: false, error: 'Verification error: ' + err.message };
+    }
+  },
+
+  // Resets password
+  resetPassword: (email, newPassword) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPass = (newPassword || '').trim();
+    if (cleanPass.length < 4) {
+      return { success: false, error: 'Password must be at least 4 characters.' };
+    }
+
+    const registrations = JSON.parse(localStorage.getItem('foundrix_local_registrations') || '[]');
+    const idx = registrations.findIndex((r) => r.email && r.email.toLowerCase() === cleanEmail);
+    if (idx >= 0) {
+      registrations[idx].password = cleanPass;
+      localStorage.setItem('foundrix_local_registrations', JSON.stringify(registrations));
+    }
+    return { success: true, message: 'Password updated successfully!' };
+  },
+};
+
 export default {
   readFileAsDataURL,
   validateRegistrationForm,
@@ -671,4 +810,5 @@ export default {
   submitRegistration,
   fetchEarlyBirdStats,
   TeamService,
+  AuthService,
 };

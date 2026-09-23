@@ -51,7 +51,7 @@ export const Footer = ({ onRegisterClick, onOpenHackathonHub }) => {
             </div>
 
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-              Flagship Startup & Tech Ecosystem Event organized by NEC Team, Raghu Engineering College in association with E-Cell IIT Bombay / National Entrepreneurship Challenge.
+              Flagship Startup & Tech Ecosystem Event organized by the students of Raghu Engineering College.
             </p>
 
             <div style={{ marginBottom: '16px' }}>
@@ -133,11 +133,11 @@ export const Footer = ({ onRegisterClick, onOpenHackathonHub }) => {
           }}
         >
           <div>
-            © 2026 FOUNDRIX • NEC Team, Raghu Engineering College. All rights reserved.
+            © 2026 FOUNDRIX • Raghu Engineering College. All rights reserved.
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <span>E-Cell IIT Bombay (NEC)</span>
+            <span>Visakhapatnam, Andhra Pradesh</span>
             <button
               onClick={scrollToTop}
               style={{

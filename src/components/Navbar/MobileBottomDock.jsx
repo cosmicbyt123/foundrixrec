@@ -68,7 +68,7 @@ export const MobileBottomDock = ({ onRegisterClick, onOpenHackathonHub }) => {
           }}
         >
           <Users size={12} />
-          <span>Teams</span>
+          <span>LOGIN</span>
         </button>
 
         <button

@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FOUNDRIX 2026 — Gate Attendance Scanner</title>
+  <meta name="description" content="Ultra-fast QR attendance scanner and gate check-in system for FOUNDRIX 2026 summit.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- High-Performance QR Scanning Library (CDN) -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #070a12;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(56, 189, 248, 0.18);
+      --card-hover: rgba(30, 41, 59, 0.9);
+      --cyan: #00f0ff;
+      --cyan-glow: rgba(0, 240, 255, 0.25);
+      --blue: #2563eb;
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.3);
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.18) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(0, 240, 255, 0.08) 0%, transparent 50%);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background: rgba(10, 15, 29, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 18px;
+    }
+
+    .header-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #00f0ff, #2563eb);
+      color: #050811;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 5px 9px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 16px;
+    }
+
+    .icon-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Viewport / Grid */
+    .scanner-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 860px) {
+      .scanner-grid {
+        grid-template-columns: 1.1fr 1fr;
+        align-items: start;
+      }
+    }
+
+    /* Scanner Card */
+    .scanner-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--emerald);
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Viewfinder Container */
+    .viewfinder-wrapper {
+      position: relative;
+      width: 100%;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      aspect-ratio: 4/3;
+      max-height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .viewfinder-wrapper.scan-flash {
+      animation: flash-green 0.35s ease-out;
+    }
+
+    .viewfinder-wrapper.warn-flash {
+      animation: flash-amber 0.35s ease-out;
+    }
+
+    @keyframes flash-green {
+      0% { border-color: var(--emerald); box-shadow: 0 0 30px var(--emerald); }
+      100% { border-color: rgba(255, 255, 255, 0.1); box-shadow: none; }
+    }
+
+    @keyframes flash-amber {
+      0% { border-color: var(--amber); box-shadow: 0 0 30px var(--amber); }
+      100% { border-color: rgba(255, 255, 255, 0.1); box-shadow: none; }
+    }
+
+    #reader {
+      width: 100% !important;
+      height: 100% !important;
+      border: none !important;
+    }
+
+    #reader video {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      border-radius: 12px;
+    }
+
+    /* Futuristic Scan Overlay Target */
+    .scan-target-box {
+      position: absolute;
+      width: 68%;
+      height: 68%;
+      pointer-events: none;
+      border: 2px dashed rgba(0, 240, 255, 0.45);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .scan-target-box::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; width: 20px; height: 20px;
+      border-top: 4px solid var(--cyan);
+      border-left: 4px solid var(--cyan);
+      border-top-left-radius: 8px;
+    }
+
+    .scan-target-box::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; right: -2px; width: 20px; height: 20px;
+      border-bottom: 4px solid var(--cyan);
+      border-right: 4px solid var(--cyan);
+      border-bottom-right-radius: 8px;
+    }
+
+    .scan-laser {
+      position: absolute;
+      width: 90%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      box-shadow: 0 0 12px var(--cyan);
+      animation: laser-sweep 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes laser-sweep {
+      0% { top: 15%; opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { top: 85%; opacity: 0.3; }
+    }
+
+    /* Camera Controls Bar */
+    .camera-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .select-cam {
+      flex: 1;
+      min-width: 150px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .select-cam:focus {
+      border-color: var(--cyan);
+    }
+
+    .btn-tool {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-tool:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .btn-tool.active {
+      background: var(--amber);
+      color: #000;
+      border-color: var(--amber);
+    }
+
+    /* Manual Input Section */
+    .manual-input-box {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      gap: 8px;
+    }
+
+    .manual-input {
+      flex: 1;
+      background: rgba(10, 15, 29, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .manual-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px var(--cyan-glow);
+    }
+
+    .btn-add-manual {
+      background: rgba(14, 165, 233, 0.18);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add-manual:hover {
+      background: var(--cyan);
+      color: #050811;
+    }
+
+    /* Queue & History Column */
+    .queue-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      min-height: 440px;
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      background: rgba(10, 15, 29, 0.6);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 14px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      background: rgba(30, 41, 59, 0.95);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .badge-count {
+      background: var(--cyan);
+      color: #050811;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+    }
+
+    .badge-count.emerald {
+      background: var(--emerald);
+      color: #050811;
+    }
+
+    /* Queue List Area */
+    .queue-list-container {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .queue-list-container::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .queue-list-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 45px 20px;
+      text-align: center;
+      color: var(--text-dim);
+      border: 2px dashed rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+    }
+
+    .empty-state-icon {
+      font-size: 34px;
+      margin-bottom: 10px;
+      opacity: 0.6;
+    }
+
+    .empty-state-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .empty-state-sub {
+      font-size: 12px;
+      max-width: 250px;
+    }
+
+    /* Scanned Attendee Item */
+    .attendee-item {
+      background: rgba(21, 32, 54, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.2s ease;
+      animation: slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .attendee-item:hover {
+      border-color: rgba(0, 240, 255, 0.3);
+      background: rgba(28, 42, 72, 0.8);
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .item-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reg-id-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(0, 240, 255, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    .item-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-remove-item {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-size: 15px;
+    }
+
+    .btn-remove-item:hover {
+      background: rgba(244, 63, 94, 0.2);
+      color: var(--rose);
+    }
+
+    /* Action Commit Bar */
+    .queue-actions-bar {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-commit {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .btn-commit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-commit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .queue-sub-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+    }
+
+    /* Live Toast Feedback */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      width: 90%;
+      max-width: 440px;
+    }
+
+    .toast {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toast-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.success {
+      border-color: var(--emerald);
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.3);
+    }
+
+    .toast.warn {
+      border-color: var(--amber);
+      box-shadow: 0 6px 24px rgba(245, 158, 11, 0.3);
+    }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Modal / Settings */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #0d1322;
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .setting-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .setting-input {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: monospace;
+      outline: none;
+    }
+
+    .setting-input:focus {
+      border-color: var(--cyan);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+
+    /* History Table View */
+    .history-search-bar {
+      margin-bottom: 10px;
+      display: flex;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-badge">⚡ FOUNDRIX</div>
+        <div>
+          <div class="brand-title">Gate Attendance Scanner</div>
+          <div class="brand-subtitle">Raghu Engineering College • Oct 9 & 10</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btnSettings" class="icon-btn" title="Settings & Endpoint">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Viewport -->
+  <main>
+    <div class="scanner-grid">
+      
+      <!-- Left Column: Camera Viewfinder -->
+      <section class="scanner-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="pulse-dot"></span>
+            <span>Live Camera Scanner</span>
+          </div>
+          <span id="scanStatusBadge" style="font-size: 12px; color: var(--emerald); font-weight: 600;">Ready to Scan</span>
+        </div>
+
+        <!-- Camera Viewfinder -->
+        <div class="viewfinder-wrapper" id="viewfinderWrapper">
+          <div id="reader"></div>
+          <div class="scan-target-box">
+            <div class="scan-laser"></div>
+          </div>
+        </div>
+
+        <!-- Camera Controls -->
+        <div class="camera-controls">
+          <select id="cameraSelect" class="select-cam">
+            <option value="">Detecting Cameras...</option>
+          </select>
+          <button id="btnSwitchCam" class="btn-tool" title="Flip Camera">🔄 Flip</button>
+          <button id="btnTorch" class="btn-tool" title="Toggle Flashlight" style="display: none;">🔦 Flash</button>
+          <button id="btnToggleScanner" class="btn-tool" title="Pause Scanner">⏸️ Pause</button>
+        </div>
+
+        <!-- Manual Add Option -->
+        <div class="manual-input-box">
+          <input 
+            type="text" 
+            id="manualInput" 
+            class="manual-input" 
+            placeholder="Manual Reg ID (e.g. FDX-108) or Roll..." 
+            autocomplete="off"
+          />
+          <button id="btnAddManual" class="btn-add-manual">+ Queue</button>
+        </div>
+      </section>
+
+      <!-- Right Column: Queue & Batch Attendance -->
+      <section class="queue-card">
+        <!-- Tabs Nav -->
+        <div class="tabs-nav">
+          <button id="tabQueueBtn" class="tab-btn active">
+            <span>Pending Queue</span>
+            <span id="queueBadge" class="badge-count">0</span>
+          </button>
+          <button id="tabHistoryBtn" class="tab-btn">
+            <span>Checked-In Today</span>
+            <span id="historyBadge" class="badge-count emerald">0</span>
+          </button>
+        </div>
+
+        <!-- View 1: Pending Queue -->
+        <div id="viewQueue" style="display: flex; flex-direction: column; flex: 1;">
+          <div class="queue-list-container" id="queueList">
+            <div class="empty-state" id="queueEmptyState">
+              <div class="empty-state-icon">📷</div>
+              <div class="empty-state-title">Scan attendee QR codes</div>
+              <div class="empty-state-sub">Attendees will be collected here. You can scan multiple badges, review them, and click "Mark Attendance" to submit together!</div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Bar -->
+          <div class="queue-actions-bar">
+            <button id="btnMarkAttendance" class="btn-commit" disabled>
+              <span>⚡ Mark Attendance for (0) Attendees</span>
+            </button>
+            <div class="queue-sub-actions">
+              <button id="btnClearQueue" class="btn-ghost" title="Clear pending queue">Clear Queue</button>
+              <span id="syncNotice" style="font-size: 11px; color: var(--text-dim);">Google Sheets Auto-Sync</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 2: Checked-In History -->
+        <div id="viewHistory" style="display: none; flex-direction: column; flex: 1;">
+          <div class="history-search-bar">
+            <input 
+              type="text" 
+              id="historySearch" 
+              class="manual-input" 
+              placeholder="Search by ID, Name, or Roll..." 
+              style="padding: 7px 12px; font-size: 12px;"
+            />
+            <button id="btnExportCsv" class="btn-tool" style="font-size: 12px; padding: 7px 12px;">📥 CSV</button>
+          </div>
+          <div class="queue-list-container" id="historyList">
+            <div class="empty-state" id="historyEmptyState">
+              <div class="empty-state-icon">📋</div>
+              <div class="empty-state-title">No check-ins yet</div>
+              <div class="empty-state-sub">Once attendance is committed, marked attendees will appear here.</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">⚙️ Scanner Configuration</div>
+        <button id="btnCloseSettings" class="modal-close">&times;</button>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">Google Apps Script Web App URL</label>
+        <input 
+          type="url" 
+          id="settingEndpoint" 
+          class="setting-input" 
+          value="https://script.google.com/macros/s/AKfycbwpaJnFfKXEfAKVrciD4L8EVypwFS881vECSjUKB3lj2kaf7No66dEgQ-bSqoy8Ovbs/exec"
+        />
+        <span style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Updates 'RAW DATA' Col 16 & 'PARTICIPANT LIST' Col 9</span>
+      </div>
+
+      <div class="toggle-row">
+        <span class="setting-label">Audio Beep Feedback</span>
+        <input type="checkbox" id="settingSound" checked style="accent-color: var(--cyan); width: 18px; height: 18px;">
+      </div>
+
+      <div class="toggle-row">
+        <span class="setting-label">Vibration Haptic Feedback</span>
+        <input type="checkbox" id="settingVibrate" checked style="accent-color: var(--cyan); width: 18px; height: 18px;">
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 18px;">
+        <button id="btnSaveSettings" class="btn-commit" style="flex: 1; padding: 10px;">Save Changes</button>
+        <button id="btnResetHistory" class="btn-ghost" style="color: var(--rose); border-color: rgba(244, 63, 94, 0.3);">Reset History</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Footer -->
+  <footer>
+    FOUNDRIX 2026 Summit Gate System • Raghu Engineering College • Visakhapatnam
+  </footer>
+
+  <script>
+    /**
+     * ============================================================================
+     * FOUNDRIX 2026 — Gate Attendance Scanner Application Logic
+     * Ultra-fast QR reading with Queue / Batching System
+     * ============================================================================
+     */
+
+    // Configuration & State
+    const CONFIG = {
+      defaultEndpoint: 'https://script.google.com/macros/s/AKfycbwpaJnFfKXEfAKVrciD4L8EVypwFS881vECSjUKB3lj2kaf7No66dEgQ-bSqoy8Ovbs/exec',
+      scanCooldownMs: 1400,
+      soundEnabled: true,
+      vibrateEnabled: true
+    };
+
+    let html5QrCode = null;
+    let availableCameras = [];
+    let currentCameraIndex = 0;
+    let isScannerRunning = false;
+    let torchOn = false;
+    let lastScannedText = '';
+    let lastScanTime = 0;
+
+    // Local Data Stores
+    let pendingQueue = [];
+    let checkedInHistory = [];
+
+    // DOM Elements
+    const readerElem = document.getElementById('reader');
+    const viewfinderWrapper = document.getElementById('viewfinderWrapper');
+    const cameraSelect = document.getElementById('cameraSelect');
+    const btnSwitchCam = document.getElementById('btnSwitchCam');
+    const btnTorch = document.getElementById('btnTorch');
+    const btnToggleScanner = document.getElementById('btnToggleScanner');
+    const manualInput = document.getElementById('manualInput');
+    const btnAddManual = document.getElementById('btnAddManual');
+    const queueList = document.getElementById('queueList');
+    const queueEmptyState = document.getElementById('queueEmptyState');
+    const btnMarkAttendance = document.getElementById('btnMarkAttendance');
+    const btnClearQueue = document.getElementById('btnClearQueue');
+    const queueBadge = document.getElementById('queueBadge');
+    const historyBadge = document.getElementById('historyBadge');
+    const tabQueueBtn = document.getElementById('tabQueueBtn');
+    const tabHistoryBtn = document.getElementById('tabHistoryBtn');
+    const viewQueue = document.getElementById('viewQueue');
+    const viewHistory = document.getElementById('viewHistory');
+    const historyList = document.getElementById('historyList');
+    const historyEmptyState = document.getElementById('historyEmptyState');
+    const historySearch = document.getElementById('historySearch');
+    const btnExportCsv = document.getElementById('btnExportCsv');
+    const toastContainer = document.getElementById('toastContainer');
+    const scanStatusBadge = document.getElementById('scanStatusBadge');
+
+    // Settings Modal DOM
+    const btnSettings = document.getElementById('btnSettings');
+    const settingsModal = document.getElementById('settingsModal');
+    const btnCloseSettings = document.getElementById('btnCloseSettings');
+    const settingEndpoint = document.getElementById('settingEndpoint');
+    const settingSound = document.getElementById('settingSound');
+    const settingVibrate = document.getElementById('settingVibrate');
+    const btnSaveSettings = document.getElementById('btnSaveSettings');
+    const btnResetHistory = document.getElementById('btnResetHistory');
+
+    // Audio Context (Synthesized Web Audio Chimes)
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playBeep(type = 'success') {
+      if (!CONFIG.soundEnabled) return;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const now = audioCtx.currentTime;
+
+        if (type === 'success') {
+          // Pleasant high chime (880Hz -> 1320Hz)
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } else if (type === 'duplicate') {
+          // Warning dual buzz (280Hz)
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(280, now);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        } else if (type === 'fanfare') {
+          // Success batch commit chord
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.15, now + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + i * 0.08);
+            osc.stop(now + i * 0.08 + 0.3);
+          });
+        }
+      } catch (e) {
+        console.warn('Audio feedback failed:', e);
+      }
+    }
+
+    function triggerVibration(pattern = [80]) {
+      if (!CONFIG.vibrateEnabled || !navigator.vibrate) return;
+      try {
+        navigator.vibrate(pattern);
+      } catch (e) {}
+    }
+
+    // Show Non-intrusive Toast
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      let icon = 'ℹ️';
+      if (type === 'success') icon = '✅';
+      if (type === 'warn') icon = '⚠️';
+      toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    // Load Local Storage
+    function loadSavedState() {
+      try {
+        const savedQueue = localStorage.getItem('foundrix_scan_queue');
+        if (savedQueue) pendingQueue = JSON.parse(savedQueue);
+
+        const savedHistory = localStorage.getItem('foundrix_scan_history');
+        if (savedHistory) checkedInHistory = JSON.parse(savedHistory);
+
+        const savedUrl = localStorage.getItem('foundrix_endpoint_url');
+        if (savedUrl) {
+          settingEndpoint.value = savedUrl;
+          CONFIG.defaultEndpoint = savedUrl;
+        }
+
+        const savedSound = localStorage.getItem('foundrix_sound_enabled');
+        if (savedSound !== null) {
+          CONFIG.soundEnabled = savedSound === 'true';
+          settingSound.checked = CONFIG.soundEnabled;
+        }
+
+        const savedVibrate = localStorage.getItem('foundrix_vibrate_enabled');
+        if (savedVibrate !== null) {
+          CONFIG.vibrateEnabled = savedVibrate === 'true';
+          settingVibrate.checked = CONFIG.vibrateEnabled;
+        }
+      } catch (err) {
+        console.warn('Error loading localStorage:', err);
+      }
+      renderQueueUI();
+      renderHistoryUI();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('foundrix_scan_queue', JSON.stringify(pendingQueue));
+        localStorage.setItem('foundrix_scan_history', JSON.stringify(checkedInHistory));
+      } catch (e) {}
+    }
+
+    // Parse Scanned QR Data (Handles Pass format or Raw IDs)
+    function parseScanPayload(text) {
+      let trimmed = text.trim();
+      let id = trimmed;
+      let name = 'Attendee';
+      let roll = '';
+      let college = 'Raghu Engineering College';
+
+      // Format: FOUNDRIX-PASS:FDX-101|Wasim Khan|2201A0501|REC
+      if (trimmed.startsWith('FOUNDRIX-PASS:')) {
+        const payload = trimmed.substring('FOUNDRIX-PASS:'.length);
+        const parts = payload.split('|');
+        if (parts[0]) id = parts[0].trim();
+        if (parts[1]) name = parts[1].trim();
+        if (parts[2]) roll = parts[2].trim();
+        if (parts[3]) college = parts[3].trim();
+      } else if (trimmed.includes('|')) {
+        const parts = trimmed.split('|');
+        if (parts[0]) id = parts[0].trim();
+        if (parts[1]) name = parts[1].trim();
+        if (parts[2]) roll = parts[2].trim();
+      } else {
+        // Plain ID or Roll
+        id = trimmed.toUpperCase();
+        if (id.startsWith('FDX-')) {
+          name = 'Delegate ' + id;
+        } else {
+          roll = id;
+          name = 'Roll: ' + id;
+        }
+      }
+
+      return {
+        id: id.toUpperCase(),
+        name: name,
+        roll: roll.toUpperCase(),
+        college: college,
+        scannedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        raw: text
+      };
+    }
+
+    // Process a newly detected attendee
+    function handleAttendeeCaptured(rawText) {
+      const now = Date.now();
+      if (rawText === lastScannedText && (now - lastScanTime) < CONFIG.scanCooldownMs) {
+        return; // debounce identical scan
+      }
+      lastScannedText = rawText;
+      lastScanTime = now;
+
+      const attendee = parseScanPayload(rawText);
+
+      // Check if already in current pending queue
+      const inQueueIndex = pendingQueue.findIndex(item => 
+        item.id === attendee.id || (item.roll && attendee.roll && item.roll === attendee.roll)
+      );
+      if (inQueueIndex >= 0) {
+        playBeep('duplicate');
+        triggerVibration([100, 60, 100]);
+        viewfinderWrapper.classList.add('warn-flash');
+        setTimeout(() => viewfinderWrapper.classList.remove('warn-flash'), 400);
+        showToast(`Already in Queue: ${attendee.id} (${attendee.name})`, 'warn');
+        return;
+      }
+
+      // Check if already marked present earlier today
+      const inHistory = checkedInHistory.find(item => 
+        item.id === attendee.id || (item.roll && attendee.roll && item.roll === attendee.roll)
+      );
+      if (inHistory) {
+        playBeep('duplicate');
+        triggerVibration([120, 80, 120]);
+        viewfinderWrapper.classList.add('warn-flash');
+        setTimeout(() => viewfinderWrapper.classList.remove('warn-flash'), 400);
+        showToast(`Already Marked Present earlier: ${attendee.id} at ${inHistory.markedAt || inHistory.scannedAt}`, 'warn');
+        return;
+      }
+
+      // Add to queue!
+      pendingQueue.unshift(attendee);
+      saveState();
+      renderQueueUI();
+
+      // Visual & Audio Feedback
+      playBeep('success');
+      triggerVibration([80]);
+      viewfinderWrapper.classList.add('scan-flash');
+      setTimeout(() => viewfinderWrapper.classList.remove('scan-flash'), 400);
+
+      showToast(`+ Added to Queue: ${attendee.id} (${attendee.name})`, 'success');
+    }
+
+    // Render Queue UI
+    function renderQueueUI() {
+      queueBadge.textContent = pendingQueue.length;
+      btnMarkAttendance.innerHTML = `<span>⚡ Mark Attendance for (${pendingQueue.length}) Attendees</span>`;
+
+      if (pendingQueue.length === 0) {
+        queueEmptyState.style.display = 'flex';
+        btnMarkAttendance.disabled = true;
+        // Clean out attendee items except empty state
+        const items = queueList.querySelectorAll('.attendee-item');
+        items.forEach(el => el.remove());
+        return;
+      }
+
+      queueEmptyState.style.display = 'none';
+      btnMarkAttendance.disabled = false;
+
+      // Rebuild list
+      const items = queueList.querySelectorAll('.attendee-item');
+      items.forEach(el => el.remove());
+
+      pendingQueue.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = 'attendee-item';
+        row.innerHTML = `
+          <div class="item-info">
+            <div class="item-top">
+              <span class="reg-id-badge">${item.id}</span>
+              <span class="item-name">${item.name}</span>
+            </div>
+            <div class="item-meta">
+              ${item.roll ? `<span>Roll: ${item.roll}</span> • ` : ''}
+              <span>🕒 ${item.scannedAt}</span>
+            </div>
+          </div>
+          <button class="btn-remove-item" title="Remove from queue" onclick="removeFromQueue(${index})">✕</button>
+        `;
+        queueList.appendChild(row);
+      });
+    }
+
+    // Remove single item from queue
+    window.removeFromQueue = function(index) {
+      if (index >= 0 && index < pendingQueue.length) {
+        const removed = pendingQueue.splice(index, 1)[0];
+        saveState();
+        renderQueueUI();
+        showToast(`Removed ${removed.id} from queue`, 'info');
+      }
+    };
+
+    // Clear whole queue
+    btnClearQueue.addEventListener('click', () => {
+      if (pendingQueue.length === 0) return;
+      if (confirm(`Remove all ${pendingQueue.length} attendees from the pending queue?`)) {
+        pendingQueue = [];
+        saveState();
+        renderQueueUI();
+        showToast('Pending queue cleared', 'info');
+      }
+    });
+
+    // Render History UI
+    function renderHistoryUI(filterText = '') {
+      historyBadge.textContent = checkedInHistory.length;
+
+      const filtered = checkedInHistory.filter(item => {
+        if (!filterText) return true;
+        const q = filterText.toLowerCase();
+        return (
+          item.id.toLowerCase().includes(q) ||
+          item.name.toLowerCase().includes(q) ||
+          (item.roll && item.roll.toLowerCase().includes(q))
+        );
+      });
+
+      if (filtered.length === 0) {
+        historyEmptyState.style.display = 'flex';
+        const items = historyList.querySelectorAll('.attendee-item');
+        items.forEach(el => el.remove());
+        return;
+      }
+
+      historyEmptyState.style.display = 'none';
+      const items = historyList.querySelectorAll('.attendee-item');
+      items.forEach(el => el.remove());
+
+      filtered.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'attendee-item';
+        row.innerHTML = `
+          <div class="item-info">
+            <div class="item-top">
+              <span class="reg-id-badge" style="background: rgba(16, 185, 129, 0.12); color: var(--emerald); border-color: rgba(16, 185, 129, 0.3);">${item.id}</span>
+              <span class="item-name">${item.name}</span>
+            </div>
+            <div class="item-meta">
+              ${item.roll ? `<span>Roll: ${item.roll}</span> • ` : ''}
+              <span>🟢 Present at ${item.markedAt || item.scannedAt}</span>
+            </div>
+          </div>
+          <span style="font-size: 11px; color: var(--emerald); font-weight: 700; padding-right: 6px;">SYNCED</span>
+        `;
+        historyList.appendChild(row);
+      });
+    }
+
+    historySearch.addEventListener('input', (e) => {
+      renderHistoryUI(e.target.value.trim());
+    });
+
+    // Mark Attendance for All Items in Queue
+    btnMarkAttendance.addEventListener('click', async () => {
+      if (pendingQueue.length === 0) return;
+
+      const count = pendingQueue.length;
+      const ids = pendingQueue.map(item => item.id);
+      const endpoint = settingEndpoint.value.trim() || CONFIG.defaultEndpoint;
+
+      btnMarkAttendance.disabled = true;
+      btnMarkAttendance.innerHTML = `<span>⏳ Marking Attendance for (${count}) in Sheets...</span>`;
+
+      const payload = {
+        action: 'mark_attendance',
+        ids: ids,
+        items: pendingQueue,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        // Post to Google Apps Script Web App
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        let data = null;
+        try {
+          data = await res.json();
+        } catch (e) {
+          // In case of plain text or 302 redirect
+          data = { success: true };
+        }
+
+        const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        // Move all items from pendingQueue to checkedInHistory
+        pendingQueue.forEach(item => {
+          checkedInHistory.unshift({
+            ...item,
+            markedAt: nowTime,
+            status: 'Present'
+          });
+        });
+
+        pendingQueue = [];
+        saveState();
+        renderQueueUI();
+        renderHistoryUI();
+
+        playBeep('fanfare');
+        triggerVibration([100, 50, 150]);
+        showToast(`🎉 Attendance Marked! ${count} attendees synced to Google Sheets.`, 'success');
+
+      } catch (err) {
+        console.error('Error submitting attendance:', err);
+        // Even if network drops, save locally so volunteers don't lose check-ins!
+        const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        pendingQueue.forEach(item => {
+          checkedInHistory.unshift({
+            ...item,
+            markedAt: nowTime,
+            status: 'Present (Offline Saved)'
+          });
+        });
+
+        pendingQueue = [];
+        saveState();
+        renderQueueUI();
+        renderHistoryUI();
+
+        showToast(`Offline Saved: Marked ${count} locally. Check network connection.`, 'warn');
+      } finally {
+        btnMarkAttendance.disabled = false;
+        renderQueueUI();
+      }
+    });
+
+    // Manual Input Handler
+    function handleManualAdd() {
+      const val = manualInput.value.trim();
+      if (!val) return;
+      handleAttendeeCaptured(val);
+      manualInput.value = '';
+      manualInput.focus();
+    }
+
+    btnAddManual.addEventListener('click', handleManualAdd);
+    manualInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleManualAdd();
+      }
+    });
+
+    // Tab Navigation
+    tabQueueBtn.addEventListener('click', () => {
+      tabQueueBtn.classList.add('active');
+      tabHistoryBtn.classList.remove('active');
+      viewQueue.style.display = 'flex';
+      viewHistory.style.display = 'none';
+    });
+
+    tabHistoryBtn.addEventListener('click', () => {
+      tabHistoryBtn.classList.add('active');
+      tabQueueBtn.classList.remove('active');
+      viewHistory.style.display = 'flex';
+      viewQueue.style.display = 'none';
+      renderHistoryUI(historySearch.value.trim());
+    });
+
+    // Export CSV of Checked-In History
+    btnExportCsv.addEventListener('click', () => {
+      if (checkedInHistory.length === 0) {
+        showToast('No checked-in attendees to export', 'warn');
+        return;
+      }
+
+      let csv = 'S.No,Participation ID,Student Name,Roll Number,Campus,Check-in Time,Status\n';
+      checkedInHistory.forEach((item, idx) => {
+        const cleanName = `"${(item.name || '').replace(/"/g, '""')}"`;
+        const cleanCollege = `"${(item.college || '').replace(/"/g, '""')}"`;
+        csv += `${idx + 1},${item.id},${cleanName},${item.roll || ''},${cleanCollege},${item.markedAt || item.scannedAt},Present\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `FOUNDRIX_2026_Gate_Attendance_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('📥 CSV Attendance Roster Downloaded', 'success');
+    });
+
+    // Settings Modal
+    btnSettings.addEventListener('click', () => settingsModal.classList.add('active'));
+    btnCloseSettings.addEventListener('click', () => settingsModal.classList.remove('active'));
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) settingsModal.classList.remove('active');
+    });
+
+    btnSaveSettings.addEventListener('click', () => {
+      const url = settingEndpoint.value.trim();
+      if (url) {
+        CONFIG.defaultEndpoint = url;
+        localStorage.setItem('foundrix_endpoint_url', url);
+      }
+      CONFIG.soundEnabled = settingSound.checked;
+      CONFIG.vibrateEnabled = settingVibrate.checked;
+      localStorage.setItem('foundrix_sound_enabled', String(CONFIG.soundEnabled));
+      localStorage.setItem('foundrix_vibrate_enabled', String(CONFIG.vibrateEnabled));
+
+      settingsModal.classList.remove('active');
+      showToast('Settings saved successfully', 'success');
+    });
+
+    btnResetHistory.addEventListener('click', () => {
+      if (confirm('Are you sure you want to reset all checked-in history for today? Make sure you downloaded the CSV first!')) {
+        checkedInHistory = [];
+        saveState();
+        renderHistoryUI();
+        settingsModal.classList.remove('active');
+        showToast('History reset', 'info');
+      }
+    });
+
+    // ============================================================================
+    // Camera Engine Initialization (Html5Qrcode)
+    // ============================================================================
+
+    async function initCamera() {
+      try {
+        html5QrCode = new Html5Qrcode('reader');
+
+        const devices = await Html5Qrcode.getCameras();
+        availableCameras = devices;
+
+        cameraSelect.innerHTML = '';
+        if (devices && devices.length > 0) {
+          devices.forEach((device, index) => {
+            const opt = document.createElement('option');
+            opt.value = device.id;
+            opt.text = device.label || `Camera ${index + 1}`;
+            cameraSelect.appendChild(opt);
+          });
+
+          // Prefer back/environment camera
+          const backCamIndex = devices.findIndex(d => 
+            d.label.toLowerCase().includes('back') || 
+            d.label.toLowerCase().includes('rear') ||
+            d.label.toLowerCase().includes('environment')
+          );
+          currentCameraIndex = backCamIndex >= 0 ? backCamIndex : 0;
+          cameraSelect.selectedIndex = currentCameraIndex;
+
+          startScanner(devices[currentCameraIndex].id);
+        } else {
+          scanStatusBadge.textContent = 'No camera found';
+          scanStatusBadge.style.color = 'var(--rose)';
+          cameraSelect.innerHTML = '<option>No Camera Detected</option>';
+        }
+      } catch (err) {
+        console.error('Camera initialization error:', err);
+        scanStatusBadge.textContent = 'Camera blocked or unavailable';
+        scanStatusBadge.style.color = 'var(--rose)';
+        showToast('Camera permission denied or camera unavailable. Please use manual entry.', 'warn');
+      }
+    }
+
+    async function startScanner(cameraId) {
+      if (isScannerRunning) {
+        try {
+          await html5QrCode.stop();
+        } catch (e) {}
+      }
+
+      // High Performance QR Settings
+      const config = {
+        fps: 24, // High framerate for instant detection
+        qrbox: function(viewfinderWidth, viewfinderHeight) {
+          const edge = Math.min(viewfinderWidth, viewfinderHeight);
+          const size = Math.floor(edge * 0.72);
+          return { width: size, height: size };
+        },
+        aspectRatio: 1.333333,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true // Hardware acceleration
+        }
+      };
+
+      try {
+        await html5QrCode.start(
+          cameraId,
+          config,
+          (decodedText) => {
+            handleAttendeeCaptured(decodedText);
+          },
+          (errorMessage) => {
+            // standard frame scan pass (quiet)
+          }
+        );
+        isScannerRunning = true;
+        btnToggleScanner.textContent = '⏸️ Pause';
+        scanStatusBadge.textContent = 'Ready to Scan';
+        scanStatusBadge.style.color = 'var(--emerald)';
+
+        // Check if torch/flashlight is supported
+        checkTorchSupport();
+      } catch (err) {
+        console.warn('Failed to start scanner with camera ID, trying facingMode:', err);
+        try {
+          await html5QrCode.start(
+            { facingMode: 'environment' },
+            config,
+            (decodedText) => handleAttendeeCaptured(decodedText)
+          );
+          isScannerRunning = true;
+          btnToggleScanner.textContent = '⏸️ Pause';
+          scanStatusBadge.textContent = 'Ready to Scan';
+        } catch (e2) {
+          scanStatusBadge.textContent = 'Scan Paused';
+          scanStatusBadge.style.color = 'var(--amber)';
+        }
+      }
+    }
+
+    async function checkTorchSupport() {
+      try {
+        const capabilities = html5QrCode.getRunningTrackCapabilities();
+        if (capabilities && capabilities.torch) {
+          btnTorch.style.display = 'inline-flex';
+        } else {
+          btnTorch.style.display = 'none';
+        }
+      } catch (e) {
+        btnTorch.style.display = 'none';
+      }
+    }
+
+    // Toggle Flashlight
+    btnTorch.addEventListener('click', async () => {
+      if (!isScannerRunning) return;
+      try {
+        torchOn = !torchOn;
+        await html5QrCode.applyVideoConstraints({
+          advanced: [{ torch: torchOn }]
+        });
+        if (torchOn) {
+          btnTorch.classList.add('active');
+        } else {
+          btnTorch.classList.remove('active');
+        }
+      } catch (e) {
+        console.warn('Torch toggle failed:', e);
+      }
+    });
+
+    // Flip Camera
+    btnSwitchCam.addEventListener('click', () => {
+      if (availableCameras.length <= 1) {
+        showToast('Only one camera available on this device', 'info');
+        return;
+      }
+      currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
+      cameraSelect.selectedIndex = currentCameraIndex;
+      startScanner(availableCameras[currentCameraIndex].id);
+    });
+
+    cameraSelect.addEventListener('change', (e) => {
+      currentCameraIndex = cameraSelect.selectedIndex;
+      startScanner(e.target.value);
+    });
+
+    // Pause / Resume Toggle
+    btnToggleScanner.addEventListener('click', async () => {
+      if (!html5QrCode) return;
+      if (isScannerRunning) {
+        await html5QrCode.stop();
+        isScannerRunning = false;
+        btnToggleScanner.textContent = '▶️ Resume';
+        scanStatusBadge.textContent = 'Scanner Paused';
+        scanStatusBadge.style.color = 'var(--amber)';
+      } else {
+        const camId = cameraSelect.value || (availableCameras[currentCameraIndex] && availableCameras[currentCameraIndex].id);
+        startScanner(camId);
+      }
+    });
+
+    // Initialize on window load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      initCamera();
+    });
+
+    // Initialize Audio Context on first user tap (mobile audio requirement)
+    document.addEventListener('touchstart', initAudio, { once: true });
+    document.addEventListener('click', initAudio, { once: true });
+  </script>
+</body>
+</html>

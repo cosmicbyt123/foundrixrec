@@ -5,9 +5,9 @@
 export const EVENT_DATA = {
   hero: {
     badge: 'Flagship Student Tech & Startup Summit',
-    association: 'Hosted by Students of Raghu Engineering College × E-Cell IIT Bombay / NEC',
+    association: 'Hosted by Students of Raghu Engineering College',
     titleLine1: 'FOUNDRIX 2026',
-    titleLine2: 'THE TECH SUMMIT',
+    titleLine2: 'ENTREPRENEURSHIP & TECH SUMMIT',
     subtitle: 'Students of Raghu Engineering College present a high-octane 2-day ecosystem summit bringing together young founders, developers, innovators, and collegiate leaders.',
     dates: '9–10 October 2026',
     venue: 'Raghu Engineering College Campus, Visakhapatnam',
@@ -110,7 +110,7 @@ export const EVENT_DATA = {
     },
     {
       q: 'Where is the event hosted and how will venue logistics be shared?',
-      a: 'FOUNDRIX 2026 is proudly hosted on-campus by the students of Raghu Engineering College (NEC Team, REC). Detailed campus entry instructions and logistics updates will be emailed to registered delegates before the summit.'
+      a: 'FOUNDRIX 2026 is proudly hosted on-campus by the students of Raghu Engineering College. Detailed campus entry instructions and logistics updates will be emailed to registered delegates before the summit.'
     },
     {
       q: 'How will I receive confirmation after payment?',

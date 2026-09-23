@@ -8,7 +8,6 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
   const navLinks = [
     { label: 'About', href: '#hero' },
     { label: 'Events', href: '#events' },
-    { label: 'Schedule', href: '#schedule' },
     { label: 'Venue', href: '#venue' },
     { label: 'Passes', href: '#passes' },
     { label: 'FAQ', href: '#faq' },
@@ -127,16 +126,16 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
             </a>
           ))}
 
-          {/* Team Hub Ghost Button */}
+          {/* Login Button (E-Summit style) */}
           <button
             onClick={onOpenHackathonHub}
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              color: 'var(--accent-cyan)',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              fontSize: '0.82rem',
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              color: '#ffffff',
+              padding: '9px 18px',
+              borderRadius: '6px',
+              fontSize: '0.84rem',
               fontWeight: '700',
               cursor: 'pointer',
               display: 'inline-flex',
@@ -144,30 +143,29 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
               gap: '6px',
               fontFamily: 'var(--font-body)',
               textTransform: 'uppercase',
-              letterSpacing: '0.04em',
+              letterSpacing: '0.05em',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(0, 240, 255, 0.12)';
-              e.currentTarget.style.borderColor = 'var(--accent-cyan)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.18)';
             }}
           >
-            <Users size={14} />
-            <span>Team Hub</span>
+            <span>LOGIN</span>
           </button>
 
-          {/* Congra Template Style Crisp Electric Blue Primary Button */}
+          {/* Register Button (E-Summit style) */}
           <button
             onClick={onRegisterClick}
             style={{
               backgroundColor: '#146ef5',
               border: 'none',
-              borderRadius: '4px',
-              padding: '10px 22px',
+              borderRadius: '6px',
+              padding: '9px 22px',
               color: '#ffffff',
               fontSize: '0.86rem',
               fontWeight: '800',
@@ -178,33 +176,52 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              boxShadow: '0 0 20px rgba(20, 110, 245, 0.75)',
+              boxShadow: '0 4px 18px rgba(20, 110, 245, 0.5)',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#2579f8';
-              e.currentTarget.style.boxShadow = '0 0 28px rgba(20, 110, 245, 1)';
+              e.currentTarget.style.boxShadow = '0 6px 25px rgba(20, 110, 245, 0.8)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = '#146ef5';
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(20, 110, 245, 0.75)';
+              e.currentTarget.style.boxShadow = '0 4px 18px rgba(20, 110, 245, 0.5)';
             }}
           >
-            <span>GET A TICKET</span>
+            <span>REGISTER</span>
             <ArrowUpRight size={15} />
           </button>
         </div>
 
-        {/* Mobile View Toggle: Square Congra Blue Button */}
+        {/* Mobile View Toggle: Login + Register + Hamburger (799 pass removed) */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
+            gap: '8px',
           }}
           className="mobile-toggle"
         >
-          {/* Quick Register Pill on Mobile */}
+          {/* Mobile Login Button */}
+          <button
+            onClick={onOpenHackathonHub}
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              color: '#ffffff',
+              borderRadius: '6px',
+              padding: '7px 11px',
+              fontSize: '0.74rem',
+              fontWeight: '700',
+              letterSpacing: '0.04em',
+              cursor: 'pointer',
+              textTransform: 'uppercase',
+            }}
+          >
+            LOGIN
+          </button>
+
+          {/* Mobile Register Button */}
           <button
             onClick={onRegisterClick}
             style={{
@@ -217,32 +234,32 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
               fontWeight: '800',
               letterSpacing: '0.04em',
               cursor: 'pointer',
-              boxShadow: '0 0 12px rgba(20, 110, 245, 0.8)',
+              textTransform: 'uppercase',
+              boxShadow: '0 0 12px rgba(20, 110, 245, 0.6)',
             }}
           >
-            ₹799 PASS
+            REGISTER
           </button>
 
-          {/* Square Blue Mobile Hamburger Button (from Congra Template) */}
+          {/* Mobile Hamburger Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             style={{
-              backgroundColor: '#146ef5',
-              border: 'none',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               color: '#ffffff',
-              width: '38px',
-              height: '38px',
-              borderRadius: '4px',
+              width: '36px',
+              height: '36px',
+              borderRadius: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              boxShadow: '0 0 14px rgba(20, 110, 245, 0.6)',
               transition: 'background-color 0.2s ease',
             }}
             aria-label="Toggle navigation"
           >
-            {mobileMenuOpen ? <X size={20} strokeWidth={2.5} /> : <Menu size={20} strokeWidth={2.5} />}
+            {mobileMenuOpen ? <X size={18} strokeWidth={2.5} /> : <Menu size={18} strokeWidth={2.5} />}
           </button>
         </div>
       </div>
@@ -300,19 +317,19 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
             </a>
           ))}
 
-          {/* Hackathon Team Hub Mobile Button */}
+          {/* Login / Dashboard Mobile Button */}
           <button
             onClick={() => {
               setMobileMenuOpen(false);
               onOpenHackathonHub();
             }}
             style={{
-              background: 'rgba(0, 240, 255, 0.08)',
-              border: '1px solid var(--border-cyan)',
-              color: 'var(--accent-cyan)',
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              color: '#ffffff',
               padding: '12px',
               borderRadius: '8px',
-              fontSize: '0.85rem',
+              fontSize: '0.86rem',
               fontWeight: '700',
               fontFamily: 'var(--font-mono)',
               cursor: 'pointer',
@@ -321,10 +338,12 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
               justifyContent: 'center',
               gap: '8px',
               marginTop: '4px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
             }}
           >
             <Users size={16} />
-            <span>HACKATHON TEAM HUB</span>
+            <span>LOGIN / DASHBOARD</span>
           </button>
 
           {/* Register Pass Button */}
@@ -336,7 +355,7 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
             style={{
               backgroundColor: '#146ef5',
               border: 'none',
-              boxShadow: '0 0 20px rgba(20, 110, 245, 0.8)',
+              boxShadow: '0 4px 20px rgba(20, 110, 245, 0.6)',
               color: '#ffffff',
               borderRadius: '6px',
               padding: '13px',
@@ -346,9 +365,14 @@ export const Navbar = ({ onRegisterClick, onOpenHackathonHub }) => {
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
               cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
             }}
           >
-            REGISTER PASS — ₹799
+            <span>REGISTER FOR SUMMIT</span>
+            <ArrowUpRight size={16} />
           </button>
         </div>
       )}
