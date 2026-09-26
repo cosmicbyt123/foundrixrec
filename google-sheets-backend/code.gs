@@ -65,6 +65,9 @@ function getSpreadsheet() {
   return ss;
 }
 
+// Web App Deployment Endpoint URL
+const DEPLOYED_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwpaJnFfKXEfAKVrciD4L8EVypwFS881vECSjUKB3lj2kaf7No66dEgQ-bSqoy8Ovbs/exec';
+
 // Email Configuration
 const SENDER_NAME = 'FOUNDRIX 2026 Organizing Team';
 const SUMMIT_DATES = 'October 9 & 10, 2026';
@@ -73,7 +76,7 @@ const COORDINATOR_1 = 'Tarun (Lead Coordinator): +91 79893 13442';
 const COORDINATOR_2 = 'Thanu (Student Organizing Lead): +91 93465 65707';
 const WHATSAPP_GROUP_URL = 'https://chat.whatsapp.com/LtSa3ftDjZT7jmwGwK4nUM';
 
-// Expected 15 Headers for RAW DATA
+// Expected 16 Headers for RAW DATA (Includes Delegate Login Password)
 const RAW_HEADERS = [
   'date time',
   'Participation ID',
@@ -85,6 +88,7 @@ const RAW_HEADERS = [
   'location',
   'phone number',
   'gmail',
+  'password',
   'utr',
   'image name',
   'Drive link',
@@ -103,11 +107,12 @@ const COL_YEAR = 7;
 const COL_LOCATION = 8;
 const COL_PHONE = 9;
 const COL_GMAIL = 10;
-const COL_UTR = 11;
-const COL_IMAGE_NAME = 12;
-const COL_DRIVE_LINK = 13;
-const COL_VERIFIED = 14;
-const COL_EMAIL_SENT = 15;
+const COL_PASSWORD = 11;
+const COL_UTR = 12;
+const COL_IMAGE_NAME = 13;
+const COL_DRIVE_LINK = 14;
+const COL_VERIFIED = 15;
+const COL_EMAIL_SENT = 16;
 
 // ============================================================================
 // 1. SETUP & UI INITIALIZATION
@@ -123,8 +128,9 @@ function onOpen() {
     .addItem('2. Install Auto-Email Edit Trigger', 'installOnEditTrigger')
     .addSeparator()
     .addItem('3. Process Verified Rows & Send Emails Now', 'processVerifiedRows')
-    .addItem('4. Fix Google Drive Team Permissions', 'fixDrivePermissions')
-    .addItem('5. Refresh & Rebuild Hackathon Teams Sheet', 'rebuildHackathonTeamsMenu')
+    .addItem('4. Send / Resend QR Ticket to Selected Row', 'sendTicketToActiveRow')
+    .addItem('5. Fix Google Drive Team Permissions', 'fixDrivePermissions')
+    .addItem('6. Refresh & Rebuild Hackathon Teams Sheet', 'rebuildHackathonTeamsMenu')
     .addToUi();
 }
 
@@ -134,9 +140,18 @@ function onOpen() {
 function setupAllSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  // 1. RAW DATA (The Master 15-Column Sheet)
+  // 1. RAW DATA (The Master 16-Column Sheet with Password)
   let rawSheet = ss.getSheetByName(SHEET_RAW);
   if (!rawSheet) rawSheet = ss.insertSheet(SHEET_RAW, 0);
+
+  // Auto-migration: If existing sheet has 15 columns with 'utr' at column 11, insert password column
+  if (rawSheet.getLastColumn() >= 11) {
+    const col11Val = String(rawSheet.getRange(1, 11).getValue()).trim().toLowerCase();
+    if (col11Val === 'utr') {
+      rawSheet.insertColumnBefore(11);
+      rawSheet.getRange(1, 11).setValue('password');
+    }
+  }
 
   rawSheet.getRange(1, 1, 1, RAW_HEADERS.length).setValues([RAW_HEADERS]);
   rawSheet.getRange(1, 1, 1, RAW_HEADERS.length)
@@ -148,13 +163,13 @@ function setupAllSheets() {
     .setHorizontalAlignment('center');
   rawSheet.setFrozenRows(1);
 
-  // Dropdown Validation for Verified & Email Sent
+  // Dropdown Validation for Verified (Col 15) & Email Sent (Col 16)
   const yesNoRule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['No', 'Yes'], true)
+    .requireValueInList(['No', 'Yes', 'Verified'], true)
     .setAllowInvalid(false)
     .build();
-  rawSheet.getRange('N2:N5000').setDataValidation(yesNoRule);
   rawSheet.getRange('O2:O5000').setDataValidation(yesNoRule);
+  rawSheet.getRange('P2:P5000').setDataValidation(yesNoRule);
 
   rawSheet.setColumnWidth(1, 160); // date time
   rawSheet.setColumnWidth(2, 130); // Participation ID
@@ -166,11 +181,12 @@ function setupAllSheets() {
   rawSheet.setColumnWidth(8, 140); // location
   rawSheet.setColumnWidth(9, 120); // phone number
   rawSheet.setColumnWidth(10, 200); // gmail
-  rawSheet.setColumnWidth(11, 150); // utr
-  rawSheet.setColumnWidth(12, 220); // image name
-  rawSheet.setColumnWidth(13, 180); // Drive link
-  rawSheet.setColumnWidth(14, 90);  // Verified
-  rawSheet.setColumnWidth(15, 100); // Email Sent
+  rawSheet.setColumnWidth(11, 140); // password
+  rawSheet.setColumnWidth(12, 150); // utr
+  rawSheet.setColumnWidth(13, 220); // image name
+  rawSheet.setColumnWidth(14, 180); // Drive link
+  rawSheet.setColumnWidth(15, 90);  // Verified
+  rawSheet.setColumnWidth(16, 100); // Email Sent
 
   // 2. PARTICIPANT LIST
   let partSheet = ss.getSheetByName(SHEET_PARTICIPANTS);
@@ -385,9 +401,9 @@ function doPost(e) {
       let results = [];
 
       if (rawSheet && idsToMark.length > 0) {
-        // Ensure column 16 exists for Attendance
-        if (rawSheet.getLastColumn() < 16) {
-          rawSheet.getRange(1, 16).setValue('Attendance')
+        // Ensure column 17 exists for Attendance (16 base columns + 1)
+        if (rawSheet.getLastColumn() < 17) {
+          rawSheet.getRange(1, 17).setValue('Attendance')
             .setBackground('#003566').setFontColor('#ffd60a').setFontWeight('bold');
         }
 
@@ -404,7 +420,7 @@ function doPost(e) {
           );
 
           if (matched) {
-            rawSheet.getRange(i + 1, 16).setValue('Present (' + timeStr + ')')
+            rawSheet.getRange(i + 1, 17).setValue('Present (' + timeStr + ')')
               .setBackground('#d4edda').setFontColor('#155724').setFontWeight('bold');
             markedCount++;
             results.push({ id: rowPartId, name: data[i][COL_NAME - 1], roll: rowRoll, status: 'Marked Present' });
@@ -466,7 +482,7 @@ function doPost(e) {
 
     const nowFormatted = Utilities.formatDate(new Date(), 'Asia/Kolkata', 'dd/MM/yyyy, hh:mm:ss a');
 
-    // 1. Append to RAW DATA (Exact 15 Columns)
+    // 1. Append to RAW DATA (Exact 16 Columns including Password)
     const rawRow = [
       nowFormatted,                                        // Col 1:  date time
       participationId,                                     // Col 2:  Participation ID
@@ -478,11 +494,12 @@ function doPost(e) {
       payload.location || 'Visakhapatnam',                 // Col 8:  location
       payload.phone || '',                                 // Col 9:  phone number
       payload.email || '',                                 // Col 10: gmail
-      payload.utr || '',                                   // Col 11: utr
-      fileInfo.imageName,                                  // Col 12: image name
-      fileInfo.driveLink,                                  // Col 13: Drive link
-      'No',                                                // Col 14: Verified (default No)
-      'No'                                                 // Col 15: Email Sent (default No)
+      payload.password || '',                              // Col 11: password (Delegate Dashboard Login)
+      payload.utr || '',                                   // Col 12: utr
+      fileInfo.imageName,                                  // Col 13: image name
+      fileInfo.driveLink,                                  // Col 14: Drive link
+      'No',                                                // Col 15: Verified (default No)
+      'No'                                                 // Col 16: Email Sent (default No)
     ];
     rawSheet.appendRow(rawRow);
 
@@ -572,21 +589,45 @@ function doGet(e) {
 
       const data = sheet.getDataRange().getValues();
       for (let i = 1; i < data.length; i++) {
-        const partId = String(data[i][COL_PARTICIPATION_ID - 1]).toLowerCase();
+        const partId = String(data[i][COL_PARTICIPATION_ID - 1]).toLowerCase().trim();
+        const roll = String(data[i][COL_ROLL - 1]).toLowerCase().trim();
         const phone = String(data[i][COL_PHONE - 1]).replace(/\D/g, '');
+        const email = String(data[i][COL_GMAIL - 1]).toLowerCase().trim();
         const cleanQuery = query.replace(/\D/g, '');
 
-        if (partId === query || (cleanQuery && phone === cleanQuery)) {
+        if (
+          partId === query || 
+          roll === query || 
+          email === query || 
+          (cleanQuery && phone.length >= 10 && phone.endsWith(cleanQuery))
+        ) {
+          const rawVerified = data[i][COL_VERIFIED - 1];
+          const rawEmailSent = data[i][COL_EMAIL_SENT - 1];
+          const isVerified = isVerifiedStatus(rawVerified);
+          const isEmailSent = String(rawEmailSent).trim().toLowerCase() === 'yes';
+
+          const resolvedPartId = data[i][COL_PARTICIPATION_ID - 1];
+          const resolvedName = data[i][COL_NAME - 1] || 'Delegate';
+          const resolvedRoll = data[i][COL_ROLL - 1] || '';
+
           return ContentService.createTextOutput(JSON.stringify({
             success: true,
             found: true,
             data: {
-              participationId: data[i][COL_PARTICIPATION_ID - 1],
-              name: data[i][COL_NAME - 1],
+              participationId: resolvedPartId,
+              name: resolvedName,
               college: data[i][COL_COLLEGE - 1],
-              roll: data[i][COL_ROLL - 1],
-              verified: data[i][COL_VERIFIED - 1] === 'Yes',
-              emailSent: data[i][COL_EMAIL_SENT - 1] === 'Yes'
+              roll: resolvedRoll,
+              branch: data[i][COL_BRANCH - 1] || 'CSE',
+              year: data[i][COL_YEAR - 1] || '3rd Year',
+              location: data[i][COL_LOCATION - 1],
+              phone: data[i][COL_PHONE - 1],
+              email: data[i][COL_GMAIL - 1],
+              password: data[i][COL_PASSWORD - 1] || '',
+              utr: data[i][COL_UTR - 1],
+              verified: isVerified,
+              emailSent: isEmailSent,
+              qrPassUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent('FOUNDRIX-PASS:' + resolvedPartId + '|' + resolvedName + '|' + resolvedRoll + '|REC')
             }
           })).setMimeType(ContentService.MimeType.JSON);
         }
@@ -594,6 +635,45 @@ function doGet(e) {
 
       return ContentService.createTextOutput(JSON.stringify({ success: true, found: false }))
         .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === 'login') {
+      const identifier = (e && e.parameter && e.parameter.identifier ? e.parameter.identifier : '').trim().toLowerCase();
+      const pass = (e && e.parameter && e.parameter.password ? e.parameter.password : '').trim();
+      if (!identifier || !sheet) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Identifier required' })).setMimeType(ContentService.MimeType.JSON);
+      }
+      const data = sheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        const partId = String(data[i][COL_PARTICIPATION_ID - 1]).toLowerCase().trim();
+        const phone = String(data[i][COL_PHONE - 1]).replace(/\D/g, '');
+        const email = String(data[i][COL_GMAIL - 1]).toLowerCase().trim();
+        const storedPass = String(data[i][COL_PASSWORD - 1] || '').trim();
+        const cleanIdent = identifier.replace(/\D/g, '');
+
+        if (partId === identifier || email === identifier || (cleanIdent && phone.endsWith(cleanIdent))) {
+          if (storedPass && pass && storedPass !== pass) {
+            return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Incorrect password. Please try again.' })).setMimeType(ContentService.MimeType.JSON);
+          }
+          return ContentService.createTextOutput(JSON.stringify({
+            success: true,
+            user: {
+              regId: data[i][COL_PARTICIPATION_ID - 1],
+              name: data[i][COL_NAME - 1],
+              college: data[i][COL_COLLEGE - 1],
+              roll: data[i][COL_ROLL - 1],
+              branch: data[i][COL_BRANCH - 1],
+              year: data[i][COL_YEAR - 1],
+              phone: data[i][COL_PHONE - 1],
+              email: data[i][COL_GMAIL - 1],
+              password: storedPass,
+              verified: isVerifiedStatus(data[i][COL_VERIFIED - 1]),
+              emailSent: String(data[i][COL_EMAIL_SENT - 1]).trim().toLowerCase() === 'yes',
+            }
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'No delegate account found with this email, phone, or ID.' })).setMimeType(ContentService.MimeType.JSON);
     }
 
     if (action === 'get_teams') {
@@ -855,47 +935,108 @@ function rebuildHackathonTeamsMenu() {
 }
 
 // ============================================================================
-// 5. AUTOMATED EMAIL DISPATCH ENGINE
+// 5. AUTOMATED EMAIL DISPATCH ENGINE & QR CODE TICKET DELIVERY
 // ============================================================================
 
 /**
+ * Helper to check if a cell value represents "Verified"
+ * Tolerant of "Yes", "yes", "Verified", "verified", "True", "true", "Y", "Approved", "OK", etc.
+ */
+function isVerifiedStatus(val) {
+  if (val === undefined || val === null) return false;
+  const s = String(val).trim().toLowerCase();
+  return s === 'yes' || s === 'verified' || s === 'true' || s === 'y' || s === 'approved' || s === 'ok' || s === '1';
+}
+
+/**
  * Triggered automatically by the Installable onEdit trigger when any cell is edited.
- * If Verified (Col 14) is changed to "Yes" and Email Sent (Col 15) is "No",
- * sends the confirmation email and marks Email Sent = "Yes".
+ * Supports edits in BOTH "RAW DATA" (Column 14) and "PARTICIPANT LIST" (Column 8).
+ * Accepts "Yes", "Verified", "True", "Approved", etc.
  */
 function handleSheetEdit(e) {
   if (!e || !e.range) return;
 
   const range = e.range;
   const sheet = range.getSheet();
-  if (sheet.getName() !== SHEET_RAW) return;
-
+  const sheetName = sheet.getName();
   const editedCol = range.getColumn();
   const editedRow = range.getRow();
 
-  // Check if edited cell is in the "Verified" column and not the header row
-  if (editedCol === COL_VERIFIED && editedRow > 1) {
-    const verifiedValue = String(range.getValue()).trim().toLowerCase();
+  if (editedRow <= 1) return; // Ignore header row
 
-    if (verifiedValue === 'yes') {
-      const emailSentValue = String(sheet.getRange(editedRow, COL_EMAIL_SENT).getValue()).trim().toLowerCase();
+  const ss = getSpreadsheet() || sheet.getParent();
+  let rawSheet = ss.getSheetByName(SHEET_RAW);
+  if (!rawSheet) return;
 
-      // Guard: ONLY send if email was NOT already sent
+  // SCENARIO 1: Edited "RAW DATA" sheet at Column 14 (Verified)
+  if (sheetName === SHEET_RAW && editedCol === COL_VERIFIED) {
+    const verifiedValue = range.getValue();
+
+    if (isVerifiedStatus(verifiedValue)) {
+      const emailSentValue = String(rawSheet.getRange(editedRow, COL_EMAIL_SENT).getValue()).trim().toLowerCase();
+
+      // Normalize the cell display to standard "Yes"
+      range.setValue('Yes').setBackground('#e6f4ea').setFontColor('#137333').setFontWeight('bold');
+
+      // Dispatch confirmation email with QR Ticket if not sent yet
       if (emailSentValue !== 'yes') {
-        const success = sendParticipantConfirmationEmail(sheet, editedRow);
+        const success = sendParticipantConfirmationEmail(rawSheet, editedRow);
         if (success) {
-          // Immediately set Email Sent to "Yes" so no team member can re-send!
-          sheet.getRange(editedRow, COL_EMAIL_SENT)
+          rawSheet.getRange(editedRow, COL_EMAIL_SENT)
             .setValue('Yes')
             .setBackground('#e6f4ea')
             .setFontColor('#137333')
             .setFontWeight('bold');
 
-          // Highlight row as verified
-          sheet.getRange(editedRow, 1, 1, RAW_HEADERS.length).setBackground('#f8fcf9');
+          rawSheet.getRange(editedRow, 1, 1, RAW_HEADERS.length).setBackground('#f8fcf9');
+        }
+      }
 
-          // Synchronize Verified status in PARTICIPANT LIST
-          syncParticipantListVerification(sheet, editedRow);
+      // Synchronize to PARTICIPANT LIST
+      syncParticipantListVerification(rawSheet, editedRow);
+    }
+  }
+
+  // SCENARIO 2: Edited "PARTICIPANT LIST" sheet at Column 8 (Verified)
+  else if (sheetName === SHEET_PARTICIPANTS && editedCol === 8) {
+    const verifiedValue = range.getValue();
+
+    if (isVerifiedStatus(verifiedValue)) {
+      range.setValue('Yes').setBackground('#e6f4ea').setFontColor('#137333').setFontWeight('bold');
+
+      // Get Participation ID from Column 2 of PARTICIPANT LIST
+      const partId = String(sheet.getRange(editedRow, 2).getValue()).trim();
+      if (!partId) return;
+
+      // Find matching row in RAW DATA
+      const rawData = rawSheet.getDataRange().getValues();
+      for (let r = 1; r < rawData.length; r++) {
+        const rowPartId = String(rawData[r][COL_PARTICIPATION_ID - 1]).trim();
+        if (rowPartId.toUpperCase() === partId.toUpperCase()) {
+          const rawRowIndex = r + 1;
+          const emailSent = String(rawData[r][COL_EMAIL_SENT - 1]).trim().toLowerCase();
+
+          // Mark Verified = Yes in RAW DATA
+          rawSheet.getRange(rawRowIndex, COL_VERIFIED)
+            .setValue('Yes')
+            .setBackground('#e6f4ea')
+            .setFontColor('#137333')
+            .setFontWeight('bold');
+
+          // Dispatch confirmation email with QR Ticket if not sent yet
+          if (emailSent !== 'yes') {
+            const success = sendParticipantConfirmationEmail(rawSheet, rawRowIndex);
+            if (success) {
+              rawSheet.getRange(rawRowIndex, COL_EMAIL_SENT)
+                .setValue('Yes')
+                .setBackground('#e6f4ea')
+                .setFontColor('#137333')
+                .setFontWeight('bold');
+
+              rawSheet.getRange(rawRowIndex, 1, 1, RAW_HEADERS.length).setBackground('#f8fcf9');
+            }
+          }
+          break;
         }
       }
     }
@@ -906,7 +1047,7 @@ function handleSheetEdit(e) {
  * Synchronizes Verified status to PARTICIPANT LIST sheet
  */
 function syncParticipantListVerification(rawSheet, rawRowIndex) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet() || SpreadsheetApp.getActiveSpreadsheet();
   const partSheet = ss.getSheetByName(SHEET_PARTICIPANTS);
   if (!partSheet) return;
 
@@ -914,7 +1055,7 @@ function syncParticipantListVerification(rawSheet, rawRowIndex) {
   const data = partSheet.getDataRange().getValues();
 
   for (let i = 1; i < data.length; i++) {
-    if (String(data[i][1]).trim() === String(partId).trim()) {
+    if (String(data[i][1]).trim().toUpperCase() === String(partId).trim().toUpperCase()) {
       partSheet.getRange(i + 1, 8)
         .setValue('Yes')
         .setBackground('#e6f4ea')
@@ -927,71 +1068,154 @@ function syncParticipantListVerification(rawSheet, rawRowIndex) {
 
 /**
  * Menu item action: Loops through all rows and processes any rows where
- * Verified == "Yes" AND Email Sent != "Yes".
+ * Verified is set to "Yes", "Verified", "True", etc., and Email Sent != "Yes".
+ * Cross-checks BOTH "RAW DATA" and "PARTICIPANT LIST".
  */
 function processVerifiedRows() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(SHEET_RAW);
-  if (!sheet) {
+  const ss = getSpreadsheet() || SpreadsheetApp.getActiveSpreadsheet();
+  const rawSheet = ss.getSheetByName(SHEET_RAW);
+  const partSheet = ss.getSheetByName(SHEET_PARTICIPANTS);
+
+  if (!rawSheet) {
     SpreadsheetApp.getUi().alert('Could not find sheet: ' + SHEET_RAW);
     return;
   }
 
-  const lastRow = sheet.getLastRow();
+  const lastRow = rawSheet.getLastRow();
   if (lastRow <= 1) {
     SpreadsheetApp.getUi().alert('No student registrations found yet.');
     return;
   }
 
-  const data = sheet.getRange(2, 1, lastRow - 1, RAW_HEADERS.length).getValues();
+  // 1. Cross-sync any verified entries from PARTICIPANT LIST to RAW DATA
+  if (partSheet && partSheet.getLastRow() > 1) {
+    const pData = partSheet.getDataRange().getValues();
+    const rData = rawSheet.getDataRange().getValues();
+    for (let p = 1; p < pData.length; p++) {
+      const pPartId = String(pData[p][1]).trim().toUpperCase();
+      const pVerified = pData[p][7]; // Col 8 is index 7
+      if (isVerifiedStatus(pVerified)) {
+        for (let r = 1; r < rData.length; r++) {
+          if (String(rData[r][COL_PARTICIPATION_ID - 1]).trim().toUpperCase() === pPartId) {
+            rawSheet.getRange(r + 1, COL_VERIFIED).setValue('Yes').setBackground('#e6f4ea').setFontColor('#137333').setFontWeight('bold');
+            partSheet.getRange(p + 1, 8).setValue('Yes').setBackground('#e6f4ea').setFontColor('#137333').setFontWeight('bold');
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // 2. Process all rows in RAW DATA
+  const data = rawSheet.getRange(2, 1, rawSheet.getLastRow() - 1, RAW_HEADERS.length).getValues();
   let sentCount = 0;
 
   for (let i = 0; i < data.length; i++) {
     const rowIndex = i + 2;
-    const verified = String(data[i][COL_VERIFIED - 1]).trim().toLowerCase();
+    const verified = data[i][COL_VERIFIED - 1];
     const emailSent = String(data[i][COL_EMAIL_SENT - 1]).trim().toLowerCase();
 
-    if (verified === 'yes' && emailSent !== 'yes') {
-      const success = sendParticipantConfirmationEmail(sheet, rowIndex);
-      if (success) {
-        sheet.getRange(rowIndex, COL_EMAIL_SENT)
-          .setValue('Yes')
-          .setBackground('#e6f4ea')
-          .setFontColor('#137333')
-          .setFontWeight('bold');
+    if (isVerifiedStatus(verified)) {
+      rawSheet.getRange(rowIndex, COL_VERIFIED).setValue('Yes').setBackground('#e6f4ea').setFontColor('#137333').setFontWeight('bold');
+      syncParticipantListVerification(rawSheet, rowIndex);
 
-        sheet.getRange(rowIndex, 1, 1, RAW_HEADERS.length).setBackground('#f8fcf9');
-        syncParticipantListVerification(sheet, rowIndex);
-        sentCount++;
+      if (emailSent !== 'yes') {
+        const success = sendParticipantConfirmationEmail(rawSheet, rowIndex);
+        if (success) {
+          rawSheet.getRange(rowIndex, COL_EMAIL_SENT)
+            .setValue('Yes')
+            .setBackground('#e6f4ea')
+            .setFontColor('#137333')
+            .setFontWeight('bold');
+
+          rawSheet.getRange(rowIndex, 1, 1, RAW_HEADERS.length).setBackground('#f8fcf9');
+          sentCount++;
+        }
       }
     }
   }
 
   SpreadsheetApp.getUi().alert(
-    '✅ Processing Complete!\n\nDispatched ' + sentCount + ' new confirmation emails.\nAll sent rows are marked "Yes" under Email Sent.'
+    '✅ Processing Complete!\n\n' +
+    '• Successfully dispatched ' + sentCount + ' new confirmation emails with scannable QR Entry Passes.\n' +
+    '• Synchronized Verified status between RAW DATA and PARTICIPANT LIST.'
   );
 }
 
 /**
- * Builds and sends the official HTML confirmation email to the student's gmail
+ * Menu action to send/resend the QR confirmation email to the currently selected row in the active sheet
+ */
+function sendTicketToActiveRow() {
+  const ss = getSpreadsheet() || SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getActiveSheet();
+  const activeRow = sheet.getActiveCell().getRow();
+
+  if (activeRow <= 1) {
+    SpreadsheetApp.getUi().alert('Please click on a participant row first.');
+    return;
+  }
+
+  let rawSheet = ss.getSheetByName(SHEET_RAW);
+  let targetRawRow = activeRow;
+
+  if (sheet.getName() === SHEET_PARTICIPANTS) {
+    const partId = String(sheet.getRange(activeRow, 2).getValue()).trim();
+    if (!partId) {
+      SpreadsheetApp.getUi().alert('No Participation ID found in row ' + activeRow);
+      return;
+    }
+    const rawData = rawSheet.getDataRange().getValues();
+    let found = false;
+    for (let r = 1; r < rawData.length; r++) {
+      if (String(rawData[r][COL_PARTICIPATION_ID - 1]).trim().toUpperCase() === partId.toUpperCase()) {
+        targetRawRow = r + 1;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      SpreadsheetApp.getUi().alert('Could not find ' + partId + ' in RAW DATA sheet.');
+      return;
+    }
+  }
+
+  const success = sendParticipantConfirmationEmail(rawSheet, targetRawRow);
+  if (success) {
+    rawSheet.getRange(targetRawRow, COL_VERIFIED).setValue('Yes').setBackground('#e6f4ea').setFontColor('#137333').setFontWeight('bold');
+    rawSheet.getRange(targetRawRow, COL_EMAIL_SENT).setValue('Yes').setBackground('#e6f4ea').setFontColor('#137333').setFontWeight('bold');
+    rawSheet.getRange(targetRawRow, 1, 1, RAW_HEADERS.length).setBackground('#f8fcf9');
+    syncParticipantListVerification(rawSheet, targetRawRow);
+
+    SpreadsheetApp.getUi().alert('✅ Confirmation email with QR Ticket sent successfully for row ' + targetRawRow + '!');
+  } else {
+    SpreadsheetApp.getUi().alert('❌ Failed to send email. Please check if the row has a valid email address.');
+  }
+}
+
+/**
+ * Builds and sends the official HTML confirmation email with scannable QR ticket to the student's gmail
  */
 function sendParticipantConfirmationEmail(sheet, rowIndex) {
   const rowData = sheet.getRange(rowIndex, 1, 1, RAW_HEADERS.length).getValues()[0];
 
   const partId = rowData[COL_PARTICIPATION_ID - 1];
-  const name = rowData[COL_NAME - 1];
-  const college = rowData[COL_COLLEGE - 1];
-  const roll = rowData[COL_ROLL - 1];
-  const branch = rowData[COL_BRANCH - 1];
-  const year = rowData[COL_YEAR - 1];
-  const location = rowData[COL_LOCATION - 1];
+  const name = rowData[COL_NAME - 1] || 'Delegate';
+  const college = rowData[COL_COLLEGE - 1] || 'Raghu Engineering College';
+  const roll = rowData[COL_ROLL - 1] || '';
+  const branch = rowData[COL_BRANCH - 1] || 'Technical';
+  const year = rowData[COL_YEAR - 1] || '2026';
+  const location = rowData[COL_LOCATION - 1] || 'Visakhapatnam';
   const email = String(rowData[COL_GMAIL - 1]).trim();
-  const utr = rowData[COL_UTR - 1];
+  const utr = rowData[COL_UTR - 1] || 'Verified';
 
   if (!email || !email.includes('@')) {
     Logger.log('Invalid email at row ' + rowIndex + ': ' + email);
     return false;
   }
+
+  // Generate Official Scannable QR Ticket URL
+  const qrData = 'FOUNDRIX-PASS:' + partId + '|' + name + '|' + roll + '|REC';
+  const qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=' + encodeURIComponent(qrData);
 
   const subject = '🎟️ Pass Confirmed: ' + partId + ' — FOUNDRIX 2026 Tech Summit';
 
@@ -1015,7 +1239,26 @@ function sendParticipantConfirmationEmail(sheet, rowIndex) {
             Your payment (UTR: <code style="color: #00f0ff; background: rgba(0,240,255,0.1); padding: 2px 6px; border-radius: 4px;">${utr}</code>) has been successfully verified by our student finance desk! Your official delegate pass for <strong>FOUNDRIX 2026</strong> is confirmed.
           </p>
 
-          <!-- Ticket Box -->
+          <!-- OFFICIAL SCANNABLE QR TICKET BOX -->
+          <div style="background: #090e1a; border: 2px solid #00f0ff; border-radius: 14px; padding: 26px 20px; text-align: center; margin: 24px 0; box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);">
+            <div style="color: #00f0ff; font-size: 13px; font-weight: bold; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 14px;">
+              🎟️ OFFICIAL GATE CHECK-IN QR TICKET
+            </div>
+            <div style="display: inline-block; background: #ffffff; padding: 14px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+              <img src="${qrCodeUrl}" alt="Foundrix 2026 QR Entry Pass" width="200" height="200" style="display: block; width: 200px; height: 200px; border: 0;" />
+            </div>
+            <div style="margin-top: 14px; font-family: 'Courier New', monospace; font-size: 22px; font-weight: bold; color: #00f0ff; letter-spacing: 0.12em;">
+              ${partId}
+            </div>
+            <div style="font-size: 12px; color: #10b981; font-weight: bold; margin-top: 4px; letter-spacing: 0.05em;">
+              ✓ OFFICIAL DELEGATE PASS CONFIRMED
+            </div>
+            <div style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin-top: 10px; max-width: 440px; margin-left: auto; margin-right: auto;">
+              Present this QR code on your phone screen at the REC campus entrance registration desk on <strong>October 9, 2026</strong> for instant barcode scanning, lanyard badge issuance & delegate kit handover.
+            </div>
+          </div>
+
+          <!-- Ticket Summary Table -->
           <div style="background: #111728; border: 1px dashed #00f0ff; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
             <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
               <tr>
@@ -1062,7 +1305,7 @@ function sendParticipantConfirmationEmail(sheet, rowIndex) {
           <div style="background: rgba(20, 110, 245, 0.12); border-left: 4px solid #146ef5; padding: 14px 16px; border-radius: 4px; margin-bottom: 20px;">
             <p style="color: #ffffff; font-size: 13px; font-weight: bold; margin: 0 0 4px 0;">Check-In Instructions:</p>
             <p style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin: 0;">
-              Please present your <strong>Participation ID (${partId})</strong> or show this email confirmation at the Registration Desk upon arriving at REC Campus on <strong>October 9, 2026</strong>.
+              Please present your <strong>Gate Check-In QR Ticket</strong> above or your <strong>Participation ID (${partId})</strong> at the Registration Desk upon arriving at REC Campus on <strong>October 9, 2026</strong>.
             </p>
           </div>
 
@@ -1106,7 +1349,7 @@ function sendParticipantConfirmationEmail(sheet, rowIndex) {
       htmlBody: htmlBody,
       name: SENDER_NAME
     });
-    Logger.log('Confirmation email successfully dispatched to: ' + email);
+    Logger.log('Confirmation email with QR Pass successfully dispatched to: ' + email);
     return true;
   } catch (mailErr) {
     Logger.log('Failed to send email to ' + email + ': ' + mailErr.toString());

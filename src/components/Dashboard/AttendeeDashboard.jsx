@@ -87,6 +87,24 @@ export const AttendeeDashboard = ({ isOpen, onClose, onRegisterAnother }) => {
       const active = getActiveParticipant() || getPurchasedPass();
       if (active) {
         setParticipant(active);
+
+        // Auto-check remote Google Sheet verification status if not yet verified
+        if (!active.verified) {
+          const query = active.regId || active.participationId || active.phone || active.roll;
+          if (query) {
+            TeamService.findProfile(query, true).then((res) => {
+              if (res && res.verified) {
+                const updated = updateParticipantPass({
+                  ...active,
+                  ...res,
+                  verified: true,
+                });
+                setParticipant(updated);
+              }
+            }).catch(() => {});
+          }
+        }
+
         // Load teams and check if user belongs to a team
         TeamService.syncTeamsFromCloud().then((teams) => {
           const list = teams || TeamService.getTeams();
@@ -119,8 +137,8 @@ export const AttendeeDashboard = ({ isOpen, onClose, onRegisterAnother }) => {
     setRefreshMessage(null);
 
     try {
-      const query = regId || participant.phone;
-      const res = await TeamService.findProfile(query);
+      const query = regId || participant.phone || participant.roll;
+      const res = await TeamService.findProfile(query, true); // forceRemote = true!
 
       if (res) {
         const isNowVerified = res.verified === true;
@@ -134,7 +152,7 @@ export const AttendeeDashboard = ({ isOpen, onClose, onRegisterAnother }) => {
         if (isNowVerified) {
           setRefreshMessage({
             type: 'success',
-            text: 'Payment verified! Your official Summit Pass is now confirmed.',
+            text: 'Payment verified! Your official Summit Pass & QR code are now unlocked.',
           });
         } else {
           setRefreshMessage({

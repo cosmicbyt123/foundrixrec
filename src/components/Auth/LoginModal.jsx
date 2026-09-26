@@ -143,35 +143,39 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
       <div
         className="modal-content"
         style={{
-          maxWidth: '500px',
-          padding: 'clamp(20px, 4vw, 36px)',
-          border: '1px solid rgba(0, 240, 255, 0.35)',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(20, 110, 245, 0.3)',
+          maxWidth: '480px',
+          padding: 'clamp(24px, 4vw, 38px)',
+          background: 'rgba(8, 12, 20, 0.95)',
+          backdropFilter: 'blur(28px)',
+          border: '1.5px solid rgba(223, 238, 203, 0.3)',
+          borderRadius: '16px',
+          boxShadow: '0 30px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(223, 238, 203, 0.12)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
-                width: '40px',
-                height: '40px',
+                width: '42px',
+                height: '42px',
                 borderRadius: '10px',
-                background: 'linear-gradient(135deg, #146ef5 0%, #00f0ff 100%)',
+                background: 'linear-gradient(135deg, rgba(223, 238, 203, 0.2) 0%, rgba(27, 59, 111, 0.35) 100%)',
+                border: '1px solid rgba(223, 238, 203, 0.4)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 0 16px rgba(20, 110, 245, 0.55)',
+                boxShadow: '0 0 20px rgba(223, 238, 203, 0.15)',
               }}
             >
-              {mode === 'login' ? <LogIn size={20} color="#ffffff" /> : <KeyRound size={20} color="#ffffff" />}
+              {mode === 'login' ? <LogIn size={20} color="#dfeecb" /> : <KeyRound size={20} color="#dfeecb" />}
             </div>
             <div>
-              <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.75rem', color: '#ffffff', margin: 0 }}>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.75rem', color: '#ffffff', margin: 0, letterSpacing: '0.03em' }}>
                 {mode === 'login' ? 'DELEGATE LOGIN' : 'PASSWORD RECOVERY'}
               </h3>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--accent-cyan)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: '#dfeecb', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                 {mode === 'login' ? 'FOUNDRIX 2026 • ATTENDEE PORTAL' : 'EMAIL VERIFICATION CODE'}
               </span>
             </div>
@@ -183,12 +187,21 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
               onClose();
             }}
             style={{
-              background: 'transparent',
-              border: 'none',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '6px',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               color: 'var(--text-muted)',
-              fontSize: '1.4rem',
+              fontSize: '1rem',
               cursor: 'pointer',
+              transition: 'all 0.2s ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
           >
             ✕
           </button>
@@ -242,7 +255,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
         {mode === 'login' && (
           <form onSubmit={handleLoginSubmit}>
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
                 EMAIL, PHONE OR REGISTRATION ID *
               </label>
               <input
@@ -255,17 +268,27 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                   width: '100%',
                   padding: '13px 14px',
                   borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--border-glow)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(223, 238, 203, 0.22)',
                   color: '#ffffff',
                   fontSize: '0.95rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#dfeecb';
+                  e.target.style.boxShadow = '0 0 15px rgba(223, 238, 203, 0.25)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(223, 238, 203, 0.22)';
+                  e.target.style.boxShadow = 'none';
                 }}
               />
             </div>
 
             <div style={{ marginBottom: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
                   PASSWORD *
                 </label>
                 <button
@@ -279,7 +302,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: 'var(--accent-cyan)',
+                    color: '#dfeecb',
                     fontSize: '0.78rem',
                     cursor: 'pointer',
                     textDecoration: 'underline',
@@ -297,26 +320,66 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                   width: '100%',
                   padding: '13px 14px',
                   borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--border-glow)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(223, 238, 203, 0.22)',
                   color: '#ffffff',
                   fontSize: '0.95rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#dfeecb';
+                  e.target.style.boxShadow = '0 0 15px rgba(223, 238, 203, 0.25)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(223, 238, 203, 0.22)';
+                  e.target.style.boxShadow = 'none';
                 }}
               />
             </div>
 
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginBottom: '20px' }}>
-              First time logging in? If you did not set a password during registration, click <strong>Forgot Password</strong> to verify via email code.
+            <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'block', marginBottom: '22px', lineHeight: '1.4' }}>
+              First time logging in? If you did not set a password during registration, click <strong style={{ color: '#dfeecb' }}>Forgot Password</strong> to verify via email code.
             </span>
 
+            {/* Radiant Champagne-Mint Login Button (Zero Blue, Pops Luxuriously) */}
             <button
               type="submit"
               disabled={loading}
-              className="btn-border-beam"
-              style={{ width: '100%', padding: '14px', marginBottom: '16px' }}
+              style={{
+                width: '100%',
+                padding: '15px',
+                marginBottom: '16px',
+                backgroundColor: '#dfeecb',
+                color: '#060709',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.94rem',
+                fontWeight: '900',
+                fontFamily: 'var(--font-body)',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 0 25px rgba(223, 238, 203, 0.45)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#edf7e2';
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(223, 238, 203, 0.7)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#dfeecb';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(223, 238, 203, 0.45)';
+                e.currentTarget.style.transform = 'none';
+              }}
             >
               <span>{loading ? 'VERIFYING...' : 'LOGIN TO DASHBOARD'}</span>
-              <ArrowRight size={16} />
+              <ArrowRight size={16} color="#060709" />
             </button>
 
             <div
@@ -339,7 +402,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--accent-cyan)',
+                  color: '#dfeecb',
                   fontWeight: '700',
                   fontSize: '0.86rem',
                   cursor: 'pointer',
@@ -351,7 +414,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                 }}
               >
                 <span>Register for ₹799 Pass Now</span>
-                <ArrowRight size={14} />
+                <ArrowRight size={14} color="#dfeecb" />
               </button>
             </div>
           </form>
@@ -362,12 +425,12 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
         {/* ========================================================================= */}
         {mode === 'forgot_email' && (
           <form onSubmit={handleSendOtp}>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.5', marginBottom: '18px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.5', marginBottom: '20px' }}>
               Enter the <strong>Gmail / Email address</strong> you used during your ₹799 pass registration. We will send a 6-digit verification code to log you in.
             </p>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ marginBottom: '22px' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
                 REGISTERED EMAIL ADDRESS *
               </label>
               <input
@@ -380,10 +443,19 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                   width: '100%',
                   padding: '13px 14px',
                   borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--border-glow)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(223, 238, 203, 0.22)',
                   color: '#ffffff',
                   fontSize: '0.95rem',
+                  outline: 'none',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#dfeecb';
+                  e.target.style.boxShadow = '0 0 15px rgba(223, 238, 203, 0.25)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(223, 238, 203, 0.22)';
+                  e.target.style.boxShadow = 'none';
                 }}
               />
             </div>
@@ -391,11 +463,40 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
             <button
               type="submit"
               disabled={loading}
-              className="btn-border-beam"
-              style={{ width: '100%', padding: '14px', marginBottom: '14px' }}
+              style={{
+                width: '100%',
+                padding: '15px',
+                marginBottom: '14px',
+                backgroundColor: '#dfeecb',
+                color: '#060709',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.94rem',
+                fontWeight: '900',
+                fontFamily: 'var(--font-body)',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 0 25px rgba(223, 238, 203, 0.45)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#edf7e2';
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(223, 238, 203, 0.7)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#dfeecb';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(223, 238, 203, 0.45)';
+                e.currentTarget.style.transform = 'none';
+              }}
             >
               <span>{loading ? 'SENDING CODE...' : 'SEND VERIFICATION CODE'}</span>
-              <Mail size={16} />
+              <Mail size={16} color="#060709" />
             </button>
 
             <button
@@ -416,7 +517,10 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                 justifyContent: 'center',
                 gap: '6px',
                 padding: '8px',
+                transition: 'color 0.2s ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
             >
               <ArrowLeft size={14} />
               <span>Back to Login</span>
@@ -430,17 +534,17 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
         {mode === 'forgot_code' && (
           <form onSubmit={handleVerifyOtp}>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.86rem', lineHeight: '1.5', marginBottom: '16px' }}>
-              We dispatched a 6-digit code to <strong>{forgotEmail}</strong>. Please enter the code below to verify your account.
+              We dispatched a 6-digit code to <strong style={{ color: '#dfeecb' }}>{forgotEmail}</strong>. Please enter the code below to verify your account.
             </p>
 
             {devOtpHint && (
               <div
                 style={{
-                  padding: '8px 12px',
+                  padding: '8px 14px',
                   borderRadius: '6px',
-                  backgroundColor: 'rgba(0, 240, 255, 0.1)',
-                  border: '1px dashed var(--accent-cyan)',
-                  color: 'var(--accent-cyan)',
+                  backgroundColor: 'rgba(223, 238, 203, 0.08)',
+                  border: '1px dashed rgba(223, 238, 203, 0.4)',
+                  color: '#dfeecb',
                   fontSize: '0.8rem',
                   fontFamily: 'var(--font-mono)',
                   marginBottom: '16px',
@@ -456,7 +560,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#ffffff',
+                    color: '#dfeecb',
                     fontSize: '0.74rem',
                     textDecoration: 'underline',
                     cursor: 'pointer',
@@ -468,7 +572,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
             )}
 
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
                 6-DIGIT VERIFICATION CODE *
               </label>
               <input
@@ -482,19 +586,28 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                   width: '100%',
                   padding: '14px',
                   borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--accent-cyan)',
-                  color: 'var(--accent-cyan)',
+                  backgroundColor: 'rgba(223, 238, 203, 0.04)',
+                  border: '1.5px solid rgba(223, 238, 203, 0.4)',
+                  color: '#dfeecb',
                   fontSize: '1.4rem',
                   fontFamily: 'var(--font-mono)',
                   letterSpacing: '0.35em',
                   textAlign: 'center',
+                  outline: 'none',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#dfeecb';
+                  e.target.style.boxShadow = '0 0 20px rgba(223, 238, 203, 0.3)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(223, 238, 203, 0.4)';
+                  e.target.style.boxShadow = 'none';
                 }}
               />
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ marginBottom: '22px' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
                 NEW PASSWORD (OPTIONAL)
               </label>
               <input
@@ -506,10 +619,19 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                   width: '100%',
                   padding: '12px 14px',
                   borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.14)',
                   color: '#ffffff',
                   fontSize: '0.9rem',
+                  outline: 'none',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#dfeecb';
+                  e.target.style.boxShadow = '0 0 15px rgba(223, 238, 203, 0.2)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.14)';
+                  e.target.style.boxShadow = 'none';
                 }}
               />
             </div>
@@ -517,11 +639,40 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
             <button
               type="submit"
               disabled={loading}
-              className="btn-border-beam"
-              style={{ width: '100%', padding: '14px', marginBottom: '14px' }}
+              style={{
+                width: '100%',
+                padding: '15px',
+                marginBottom: '14px',
+                backgroundColor: '#dfeecb',
+                color: '#060709',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.94rem',
+                fontWeight: '900',
+                fontFamily: 'var(--font-body)',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 0 25px rgba(223, 238, 203, 0.45)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#edf7e2';
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(223, 238, 203, 0.7)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#dfeecb';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(223, 238, 203, 0.45)';
+                e.currentTarget.style.transform = 'none';
+              }}
             >
               <span>{loading ? 'VERIFYING...' : 'VERIFY & ACCESS DASHBOARD'}</span>
-              <ArrowRight size={16} />
+              <ArrowRight size={16} color="#060709" />
             </button>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -550,7 +701,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--accent-cyan)',
+                  color: '#dfeecb',
                   fontSize: '0.78rem',
                   cursor: 'pointer',
                   display: 'flex',
@@ -559,7 +710,7 @@ export const LoginModal = ({ isOpen, onClose, onLoginSuccess, onRegisterClick })
                   textDecoration: 'underline',
                 }}
               >
-                <RefreshCw size={12} />
+                <RefreshCw size={12} color="#dfeecb" />
                 <span>Resend Code</span>
               </button>
             </div>

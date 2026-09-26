@@ -1,15 +1,26 @@
+# ==============================================================================
+# FOUNDRIX 2026 — Production .gitignore
+# ==============================================================================
+
 # Dependencies
 node_modules/
 /.pnp
 .pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
 
-# Production build outputs
+# Production Build Outputs
 dist/
 dist-ssr/
 build/
+out/
+.next/
 *.local
 
-# Environment variables & secrets
+# Environment Variables & Secrets (CRITICAL for production security)
 .env
 .env.local
 .env.development.local
@@ -18,25 +29,59 @@ build/
 *.env
 !.env.example
 
-# Temporary / Scratch & Test files
+# Large Media & Video Screen Recordings (never commit heavy binaries to git)
+*.mp4
+*.webm
+*.mov
+*.avi
+*.mkv
+*preview.jpg
+*preview.png
+public/assets/*preview.jpg
+public/assets/*preview.png
+
+# Reference Templates & Raw Screen Captures
+template/
+assests/
+
+# Temporary / Scratch & Test Scripts
 scratch/
+test_system.py
+manage_teams.py
+scanner.html
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Python Cache & Artifacts
 __pycache__/
 *.py[cod]
 *$py.class
-test_system.py
+*.pyo
+.pytest_cache/
 
-# Editor & OS artifacts
-.vscode/
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Directories
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
-.DS_Store
-Thumbs.db
 
-# Logs & Debugging
+# Logs & Debug Reports
 logs/
 *.log
 npm-debug.log*
@@ -45,5 +90,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Template / Backup
-template/
+# Cloudflare / Serverless Artifacts
+.wrangler/
+.mf/

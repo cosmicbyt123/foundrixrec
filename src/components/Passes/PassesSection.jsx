@@ -44,7 +44,7 @@ export const PassesSection = ({ onRegisterClick }) => {
               margin: 0,
             }}
           >
-            {isEarlyBirdActive 
+            {isEarlyBirdActive
               ? 'Choose the experience that suits you best! Flat ₹799 per head all-inclusive pass.'
               : 'Flat ₹799 per head all-inclusive pass for the 2-day flagship summit.'}
           </p>
@@ -87,26 +87,29 @@ export const PassesSection = ({ onRegisterClick }) => {
             alignItems: 'stretch',
           }}
         >
-          {/* Card 1: Obsidian Black Card (Full Summit Pass) */}
+          {/* Card 1: Obsidian Luxury Card (Full Summit Pass) */}
           <div
             className="reveal-from-left"
             style={{
-              backgroundColor: '#0c0f17',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '8px',
+              backgroundColor: 'rgba(10, 14, 22, 0.88)',
+              border: '1px solid rgba(223, 238, 203, 0.3)',
+              borderRadius: '12px',
               padding: 'clamp(28px, 4vw, 40px)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              boxShadow: '0 15px 40px rgba(0, 0, 0, 0.7)',
-              transition: 'transform 0.25s ease, border-color 0.25s ease',
+              boxShadow: '0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(223, 238, 203, 0.08)',
+              backdropFilter: 'blur(16px)',
+              transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(20, 110, 245, 0.5)';
+              e.currentTarget.style.borderColor = '#dfeecb';
+              e.currentTarget.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(223, 238, 203, 0.25)';
               e.currentTarget.style.transform = 'translateY(-4px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+              e.currentTarget.style.borderColor = 'rgba(223, 238, 203, 0.3)';
+              e.currentTarget.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(223, 238, 203, 0.08)';
               e.currentTarget.style.transform = 'none';
             }}
           >
@@ -116,7 +119,7 @@ export const PassesSection = ({ onRegisterClick }) => {
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.85rem',
                   fontWeight: '700',
-                  color: 'var(--text-secondary)',
+                  color: 'var(--accent-mint)',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                   marginBottom: '16px',
@@ -174,8 +177,8 @@ export const PassesSection = ({ onRegisterClick }) => {
                       style={{
                         width: '20px',
                         height: '20px',
-                        borderRadius: '3px',
-                        backgroundColor: '#146ef5',
+                        borderRadius: '4px',
+                        backgroundColor: '#dfeecb',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -183,7 +186,7 @@ export const PassesSection = ({ onRegisterClick }) => {
                         marginTop: '2px',
                       }}
                     >
-                      <Check size={14} color="#ffffff" strokeWidth={3} />
+                      <Check size={14} color="#060709" strokeWidth={3} />
                     </div>
                     <span style={{ color: '#e2e8f0', fontSize: '0.92rem', lineHeight: '1.45' }}>
                       {item}
@@ -193,181 +196,17 @@ export const PassesSection = ({ onRegisterClick }) => {
               </div>
             </div>
 
-            {/* Congra Blue Action Button */}
+            {/* Radiant Mint Action Button that POPS */}
             <button
               onClick={onRegisterClick}
               style={{
                 width: '100%',
-                backgroundColor: '#146ef5',
+                backgroundColor: '#dfeecb',
                 border: 'none',
-                borderRadius: '4px',
-                padding: '16px',
-                color: '#ffffff',
-                fontSize: '0.92rem',
-                fontWeight: '800',
-                fontFamily: 'var(--font-body)',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 0 20px rgba(20, 110, 245, 0.6)',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#2579f8';
-                e.currentTarget.style.boxShadow = '0 0 30px rgba(20, 110, 245, 0.9)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#146ef5';
-                e.currentTarget.style.boxShadow = '0 0 20px rgba(20, 110, 245, 0.6)';
-              }}
-            >
-              <span>RESERVE PASS — ₹799</span>
-              <ArrowUpRight size={18} />
-            </button>
-          </div>
-
-          {/* Card 2: Electric Cobalt Blue Featured Card (First 200 Early Bird Spotlight) - REMOVED WHEN 200 HIT */}
-          {isEarlyBirdActive && (
-            <div
-              className="reveal-from-right"
-              style={{
-                backgroundColor: '#146ef5',
-                border: '1px solid #00f0ff',
                 borderRadius: '8px',
-                padding: 'clamp(28px, 4vw, 40px)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                boxShadow: '0 20px 50px rgba(20, 110, 245, 0.5), 0 0 30px rgba(0, 240, 255, 0.3)',
-                position: 'relative',
-                transition: 'transform 0.25s ease',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = 'none')}
-            >
-              {/* Top Badge */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '-13px',
-                  right: '24px',
-                  backgroundColor: '#ffffff',
-                  color: '#146ef5',
-                  padding: '4px 12px',
-                  borderRadius: '4px',
-                  fontSize: '0.72rem',
-                  fontWeight: '900',
-                  fontFamily: 'var(--font-mono)',
-                  letterSpacing: '0.08em',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                }}
-              >
-                LIMITED TO FIRST 200 • {stats.spotsRemaining} SPOTS LEFT
-              </div>
-
-            <div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.85rem',
-                  fontWeight: '800',
-                  color: '#ffffff',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  marginBottom: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <Sparkles size={16} />
-                <span>EARLY BIRD EXPERIENCE</span>
-              </div>
-
-              {/* Congra Big Price Header */}
-              <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '28px' }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: 'clamp(3.8rem, 8vw, 5.5rem)',
-                    color: '#ffffff',
-                    lineHeight: '0.85',
-                  }}
-                >
-                  ₹799
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: '2rem',
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    marginLeft: '2px',
-                  }}
-                >
-                  .00
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.8rem',
-                    color: '#ffffff',
-                    marginLeft: '8px',
-                    fontWeight: '700',
-                  }}
-                >
-                  + IIT MUMBAI CERTIFICATE
-                </span>
-              </div>
-
-              {/* Congra White Square Checklist */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '36px' }}>
-                {[
-                  'Official Certificate from E-Cell, IIT Mumbai (First 200 Only)',
-                  'Full Entry to 2-Day In-Person Workshop at Raghu Engg College',
-                  'Entry to Online Hackathon (Form 3–4 Member Team)',
-                  'Priority Pitch Slot on Day 1 (9 Oct) Before Startup Jury',
-                  'Official Foundrix Swags & Merch Kit',
-                  'Campus Delegate Networking & Verified Certificates',
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '3px',
-                        backgroundColor: '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        marginTop: '2px',
-                      }}
-                    >
-                      <Check size={14} color="#146ef5" strokeWidth={3} />
-                    </div>
-                    <span style={{ color: '#ffffff', fontSize: '0.92rem', lineHeight: '1.45', fontWeight: i === 0 ? '700' : '400' }}>
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Congra White Action Button */}
-            <button
-              onClick={onRegisterClick}
-              style={{
-                width: '100%',
-                backgroundColor: '#ffffff',
-                border: 'none',
-                borderRadius: '4px',
                 padding: '16px',
-                color: '#146ef5',
-                fontSize: '0.92rem',
+                color: '#060709',
+                fontSize: '0.94rem',
                 fontWeight: '900',
                 fontFamily: 'var(--font-body)',
                 letterSpacing: '0.06em',
@@ -377,22 +216,197 @@ export const PassesSection = ({ onRegisterClick }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.4)',
+                boxShadow: '0 0 25px rgba(223, 238, 203, 0.45)',
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#f1f5f9';
-                e.currentTarget.style.transform = 'scale(1.01)';
+                e.currentTarget.style.backgroundColor = '#edf7e2';
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(223, 238, 203, 0.7)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#ffffff';
+                e.currentTarget.style.backgroundColor = '#dfeecb';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(223, 238, 203, 0.45)';
                 e.currentTarget.style.transform = 'none';
               }}
             >
-              <span>CLAIM EARLY BIRD PASS</span>
-              <ArrowUpRight size={18} />
+              <span>RESERVE PASS — ₹799</span>
+              <ArrowUpRight size={18} color="#060709" />
             </button>
           </div>
+
+          {/* Card 2: Palette 2 Warm Luxury Amber Gold (First 200 Early Bird Spotlight) */}
+          {isEarlyBirdActive && (
+            <div
+              className="reveal-from-right"
+              style={{
+                background: 'linear-gradient(150deg, rgba(38, 26, 10, 0.95) 0%, rgba(18, 14, 8, 0.98) 100%)',
+                border: '1.5px solid #fbbf24',
+                borderRadius: '12px',
+                padding: 'clamp(28px, 4vw, 40px)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(245, 158, 11, 0.25)',
+                position: 'relative',
+                backdropFilter: 'blur(16px)',
+                transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 25px 60px rgba(0, 0, 0, 0.8), 0 0 45px rgba(245, 158, 11, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'none';
+                e.currentTarget.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(245, 158, 11, 0.25)';
+              }}
+            >
+              {/* Top Badge */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-13px',
+                  right: '24px',
+                  backgroundColor: '#fbbf24',
+                  color: '#1a0f00',
+                  padding: '4px 14px',
+                  borderRadius: '9999px',
+                  fontSize: '0.72rem',
+                  fontWeight: '900',
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.08em',
+                  boxShadow: '0 4px 16px rgba(245, 158, 11, 0.5)',
+                }}
+              >
+                LIMITED TO FIRST 200 • {stats.spotsRemaining} SPOTS LEFT
+              </div>
+
+              <div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.85rem',
+                    fontWeight: '800',
+                    color: '#fbbf24',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <Sparkles size={16} color="#fbbf24" />
+                  <span>EARLY BIRD EXPERIENCE</span>
+                </div>
+
+                {/* Congra Big Price Header */}
+                <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '28px' }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: 'clamp(3.8rem, 8vw, 5.5rem)',
+                      color: '#ffffff',
+                      lineHeight: '0.85',
+                    }}
+                  >
+                    ₹799
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: '2rem',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      marginLeft: '2px',
+                    }}
+                  >
+                    .00
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.8rem',
+                      color: '#fbbf24',
+                      marginLeft: '8px',
+                      fontWeight: '800',
+                    }}
+                  >
+                    + IIT MUMBAI CERTIFICATE
+                  </span>
+                </div>
+
+                {/* Congra White Square Checklist */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '36px' }}>
+                  {[
+                    'Official Certificate from E-Cell, IIT Mumbai (First 200 Only)',
+                    'Full Entry to 2-Day In-Person Workshop at Raghu Engg College',
+                    'Entry to Online Hackathon (Form 3–4 Member Team)',
+                    'Priority Pitch Slot on Day 1 (9 Oct) Before Startup Jury',
+                    'Official Foundrix Swags & Merch Kit',
+                    'Campus Delegate Networking & Verified Certificates',
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <div
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '4px',
+                          backgroundColor: '#fbbf24',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          marginTop: '2px',
+                        }}
+                      >
+                        <Check size={14} color="#1a0f00" strokeWidth={3} />
+                      </div>
+                      <span style={{ color: '#ffffff', fontSize: '0.92rem', lineHeight: '1.45', fontWeight: i === 0 ? '700' : '400' }}>
+                        {item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Warm Amber Gold Action Button */}
+              <button
+                onClick={onRegisterClick}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#fbbf24',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  color: '#1a0f00',
+                  fontSize: '0.94rem',
+                  fontWeight: '900',
+                  fontFamily: 'var(--font-body)',
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  boxShadow: '0 0 25px rgba(245, 158, 11, 0.45)',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#fde68a';
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(245, 158, 11, 0.7)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#fbbf24';
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(245, 158, 11, 0.45)';
+                  e.currentTarget.style.transform = 'none';
+                }}
+              >
+                <span>CLAIM EARLY BIRD PASS</span>
+                <ArrowUpRight size={18} color="#1a0f00" />
+              </button>
+            </div>
           )}
         </div>
       </div>

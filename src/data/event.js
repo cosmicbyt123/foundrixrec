@@ -53,7 +53,7 @@ export const EVENT_DATA = {
         'Lucrative Cash Prizes & Special Categorical Awards'
       ],
       ctaText: 'HACKATHON TEAM HUB',
-      accentColor: '#146ef5'
+      accentColor: '#dfeecb'
     },
     {
       id: 'workshop',
@@ -68,7 +68,7 @@ export const EVENT_DATA = {
         'Hands-on Frameworks & Venture Pitch Feedback on Campus'
       ],
       ctaText: 'REGISTER FOR PASS',
-      accentColor: '#00f0ff'
+      accentColor: '#fbbf24'
     }
   ],
 

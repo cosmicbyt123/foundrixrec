@@ -337,7 +337,7 @@ export const matchesTeam = (team, input) => {
  */
 export const TeamService = {
   // Finds registered participant profile by Reg ID or Phone (Local Storage + Google Sheet live lookup)
-  findProfile: async (query) => {
+  findProfile: async (query, forceRemote = false) => {
     const cleanQuery = (query || '').trim().toUpperCase();
     if (!cleanQuery) return null;
 
@@ -346,7 +346,9 @@ export const TeamService = {
     const found = registrations.find(
       (r) => r.regId?.toUpperCase() === cleanQuery || r.phone === cleanQuery
     );
-    if (found && found.name && found.name !== 'Registered Participant') {
+    
+    // Only return local record immediately if it is ALREADY VERIFIED and forceRemote is false
+    if (found && found.name && found.name !== 'Registered Participant' && found.verified === true && !forceRemote) {
       return found;
     }
 
@@ -358,14 +360,17 @@ export const TeamService = {
         if (result && result.success && result.found && result.data) {
           const profile = {
             regId: result.data.participationId || cleanQuery,
-            name: result.data.name || '',
-            college: result.data.college || 'Raghu Engineering College',
-            roll: result.data.roll || '',
-            branch: result.data.branch || 'CSE',
-            year: result.data.year || '3rd Year',
-            phone: result.data.phone || '',
-            email: result.data.email || '',
-            verified: result.data.verified,
+            name: result.data.name || (found ? found.name : ''),
+            college: result.data.college || (found ? found.college : 'Raghu Engineering College'),
+            roll: result.data.roll || (found ? found.roll : ''),
+            branch: result.data.branch || (found ? found.branch : 'CSE'),
+            year: result.data.year || (found ? found.year : '3rd Year'),
+            phone: result.data.phone || (found ? found.phone : ''),
+            email: result.data.email || (found ? found.email : ''),
+            verified: result.data.verified === true,
+            emailSent: result.data.emailSent === true,
+            qrPassUrl: result.data.qrPassUrl,
+            utr: (found ? found.utr : '') || result.data.utr
           };
           // Save in local storage cache
           const updatedRegs = registrations.filter(r => r.regId !== profile.regId);
@@ -706,12 +711,15 @@ export const AuthService = {
     }
 
     // 2. If not in local cache, query Google Apps Script lookup
-    const profile = await TeamService.findProfile(cleanId || cleanPhone);
+    const profile = await TeamService.findProfile(cleanId || cleanPhone, true);
     if (profile) {
+      if (profile.password && cleanPass && profile.password !== cleanPass) {
+        return { success: false, error: 'Incorrect password. Please try again or click Forgot Password.' };
+      }
       return { success: true, user: profile };
     }
 
-    return { success: false, error: 'No delegate account found with this email or phone number. Please register first.' };
+    return { success: false, error: 'No delegate account found with this email, phone, or ID. Please register first.' };
   },
 
   // Dispatches 6-digit OTP code to registered email

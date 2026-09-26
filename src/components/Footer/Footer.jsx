@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowUp, Sparkles, ExternalLink } from 'lucide-react';
 import RaghuLogo from '../Common/RaghuLogo';
 import { CONFIG } from '../../config/environment';
@@ -83,12 +84,12 @@ export const Footer = ({ onRegisterClick, onOpenHackathonHub }) => {
               EVENT NAVIGATION
             </h5>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
-              <li><a href="#events" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>The 2 Pillars</a></li>
-              <li><a href="#schedule" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>2-Day Itinerary</a></li>
-              <li><a href="#venue" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Campus Venue & Location</a></li>
-              <li><a href="#passes" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>All-in-One Pass (₹799)</a></li>
-              <li><a href="#faq" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>FAQs & Guidelines</a></li>
-              <li><a href="#contact" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Coordinator Helplines</a></li>
+              <li><Link to="/about" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>About FOUNDRIX</Link></li>
+              <li><Link to="/events" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>The 2 Pillars & Events</Link></li>
+              <li><Link to="/speakers" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Speakers & Mentors</Link></li>
+              <li><Link to="/venue" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Campus Venue & Location</Link></li>
+              <li><Link to="/passes" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>All-in-One Pass (₹799)</Link></li>
+              <li><Link to="/faq" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>FAQs & Guidelines</Link></li>
             </ul>
           </div>
 

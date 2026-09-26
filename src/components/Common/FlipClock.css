@@ -18,9 +18,9 @@
   gap: 8px;
   padding: 5px 14px;
   border-radius: var(--radius-full);
-  background: rgba(10, 14, 26, 0.75);
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  box-shadow: 0 0 15px rgba(20, 110, 245, 0.25);
+  background: rgba(9, 14, 22, 0.85);
+  border: 1px solid rgba(187, 247, 208, 0.28);
+  box-shadow: 0 0 15px rgba(187, 247, 208, 0.12);
   margin-bottom: 14px;
   backdrop-filter: blur(12px);
 }
@@ -29,14 +29,23 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  background-color: #86efac;
+  box-shadow: 0 0 10px #86efac;
   animation: flipLivePulse 1.8s ease-in-out infinite;
 }
 
 @keyframes flipLivePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
 }
 
 .flip-clock-container {
@@ -58,12 +67,12 @@
   position: relative;
   width: clamp(66px, 18vw, 102px);
   height: clamp(74px, 20vw, 112px);
-  background-color: #131418;
+  background-color: #101217;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: clamp(10px, 2vw, 16px);
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.85),
-    0 0 25px rgba(20, 110, 245, 0.22),
+    0 0 25px rgba(18, 48, 92, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   perspective: 500px;
   transform-style: preserve-3d;
@@ -73,10 +82,10 @@
 }
 
 .flip-card-box:hover {
-  border-color: rgba(0, 240, 255, 0.55);
+  border-color: rgba(187, 247, 208, 0.55);
   box-shadow:
     0 14px 35px rgba(0, 0, 0, 0.9),
-    0 0 35px rgba(0, 240, 255, 0.35),
+    0 0 30px rgba(187, 247, 208, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
@@ -176,6 +185,7 @@
     transform: rotateX(0deg);
     filter: brightness(1);
   }
+
   100% {
     transform: rotateX(-90deg);
     filter: brightness(0.4);
@@ -187,6 +197,7 @@
     transform: rotateX(90deg);
     filter: brightness(1.4);
   }
+
   100% {
     transform: rotateX(0deg);
     filter: brightness(1);
@@ -258,8 +269,16 @@
 }
 
 @keyframes flipDotGlow {
-  0% { opacity: 0.5; transform: scale(0.9); }
-  100% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 16px #00f0ff; }
+  0% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 0 16px #00f0ff;
+  }
 }
 
 /* Bottom Label below card */

@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import CinematicLoader from './components/Loader/CinematicLoader';
 import Navbar from './components/Navbar/Navbar';
-import Hero from './components/Hero/Hero';
-import EventsSection from './components/Events/EventsSection';
-import VenueSection from './components/Venue/VenueSection';
-import PassesSection from './components/Passes/PassesSection';
-import FAQSection from './components/FAQ/FAQSection';
-import ContactSection from './components/Contact/ContactSection';
 import Footer from './components/Footer/Footer';
 import RegistrationModal from './components/Registration/RegistrationModal';
 import AttendeeDashboard from './components/Dashboard/AttendeeDashboard';
@@ -15,10 +10,23 @@ import MobileBottomDock from './components/Navbar/MobileBottomDock';
 import ScrollProgressBar from './components/Common/ScrollProgressBar';
 import ScrollToTop from './components/Common/ScrollToTop';
 import CustomCursor from './components/Common/CustomCursor';
-import MarqueeTicker from './components/Common/MarqueeTicker';
+import PassesSideTab from './components/Common/PassesSideTab';
+import RouteScrollReset from './components/Common/RouteScrollReset';
 import useScrollReveal from './components/Common/useScrollReveal';
 import { getActiveParticipant, getPurchasedPass } from './services/sessionService';
 import { fetchEarlyBirdStats } from './services/registrationService';
+import Lenis from 'lenis';
+
+// Dedicated Route Pages
+import HomePage from './pages/HomePage';
+import EventsPage from './pages/EventsPage';
+import SpeakersPage from './pages/SpeakersPage';
+import VenuePage from './pages/VenuePage';
+import PassesPage from './pages/PassesPage';
+import FAQPage from './pages/FAQPage';
+import AboutPage from './pages/AboutPage';
+import HackathonPage from './pages/HackathonPage';
+import WorkshopPage from './pages/WorkshopPage';
 
 export const App = () => {
   const [loading, setLoading] = useState(true);
@@ -31,6 +39,31 @@ export const App = () => {
     fetchEarlyBirdStats().then((data) => {
       if (data) setIsEarlyBirdActive(data.offerActive && data.spotsRemaining > 0);
     });
+  }, []);
+
+  // E-Summit Level Buttery Smooth Scrolling with Lenis
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 0.95,
+      touchMultiplier: 1.6,
+    });
+
+    let rafId;
+    function raf(time) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
   }, []);
 
   const handleLoginClick = () => {
@@ -68,6 +101,9 @@ export const App = () => {
 
   return (
     <div className="foundrix-app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      {/* Route-driven scroll position reset */}
+      <RouteScrollReset />
+
       {/* Interactive Electric Cyan Kinetic Cursor */}
       <CustomCursor />
 
@@ -80,45 +116,74 @@ export const App = () => {
       {/* 1. Cinematic Preloader */}
       {loading && <CinematicLoader onComplete={() => setLoading(false)} />}
 
-      {/* 2. Sticky Navigation */}
+      {/* 2. Sticky Global Navigation */}
       <Navbar
         onRegisterClick={() => setIsRegisterOpen(true)}
         onOpenHackathonHub={handleLoginClick}
       />
 
-      {/* 4. Monumental Hero Section */}
+      {/* 3. Main Multi-Route Views */}
       <main style={{ flex: 1 }}>
-        <Hero
-          onRegisterClick={() => setIsRegisterOpen(true)}
-          onOpenHackathonHub={handleLoginClick}
-        />
-
-        {/* Dynamic Infinite Marquee Ribbon 1 */}
-        <MarqueeTicker items={marqueeKeywords1} />
-
-        {/* 5. The 2 Core Event Pillars (Online Hackathon & Workshop) */}
-        <EventsSection
-          onRegisterClick={() => setIsRegisterOpen(true)}
-          onOpenHackathonHub={handleLoginClick}
-        />
-
-        {/* 6. Campus Venue Showcase */}
-        <VenueSection />
-
-        {/* Dynamic Reverse Marquee Ribbon 2 */}
-        <MarqueeTicker items={marqueeKeywords2} reverse={true} />
-
-        {/* 8. Single All-Inclusive Pass Card (₹799 Per Head) */}
-        <PassesSection onRegisterClick={() => setIsRegisterOpen(true)} />
-
-        {/* 9. FAQs */}
-        <FAQSection />
-
-        {/* 10. Event Coordinators (Tarun & Thanu) */}
-        <ContactSection />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                onRegisterClick={() => setIsRegisterOpen(true)}
+                onOpenHackathonHub={handleLoginClick}
+                marqueeKeywords1={marqueeKeywords1}
+                marqueeKeywords2={marqueeKeywords2}
+              />
+            }
+          />
+          <Route
+            path="/events"
+            element={
+              <EventsPage
+                onRegisterClick={() => setIsRegisterOpen(true)}
+                onOpenHackathonHub={handleLoginClick}
+              />
+            }
+          />
+          <Route
+            path="/speakers"
+            element={<SpeakersPage />}
+          />
+          <Route
+            path="/venue"
+            element={<VenuePage />}
+          />
+          <Route
+            path="/passes"
+            element={<PassesPage onRegisterClick={() => setIsRegisterOpen(true)} />}
+          />
+          <Route
+            path="/faq"
+            element={<FAQPage />}
+          />
+          <Route
+            path="/hackathon"
+            element={<HackathonPage onRegisterClick={() => setIsRegisterOpen(true)} />}
+          />
+          <Route
+            path="/workshop"
+            element={<WorkshopPage onRegisterClick={() => setIsRegisterOpen(true)} />}
+          />
+          <Route
+            path="/about"
+            element={<AboutPage />}
+          />
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
+          />
+        </Routes>
       </main>
 
-      {/* 11. Modern Footer */}
+      {/* Pinned Right-Edge 'PASSES' Vertical Tab */}
+      <PassesSideTab onRegisterClick={() => setIsRegisterOpen(true)} />
+
+      {/* Modern Global Footer */}
       <Footer
         onRegisterClick={() => setIsRegisterOpen(true)}
         onOpenHackathonHub={handleLoginClick}
