@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const RaghuLogo = ({ size = 'medium', className = '' }) => {
-  const height = size === 'small' ? '32px' : size === 'large' ? '54px' : '42px';
+  const height = size === 'small' ? '36px' : size === 'large' ? '54px' : '42px';
 
   return (
     <a

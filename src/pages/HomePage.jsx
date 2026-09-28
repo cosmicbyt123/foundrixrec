@@ -17,7 +17,6 @@ export const HomePage = ({
 
       {/* 2. Events Section: The 2 Core Pillars Spine & Cards */}
       <EventsSection
-        hideHeader={true}
         onRegisterClick={onRegisterClick}
         onOpenHackathonHub={onOpenHackathonHub}
       />

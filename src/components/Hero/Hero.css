@@ -1,0 +1,378 @@
+/* ==========================================================================
+   FOUNDRIX 2026 — Hero Section Styles
+   Strictly Scoped Cinematic Aesthetics matching Reference Design
+   ========================================================================== */
+
+/* Continuous Foundation Color Variables */
+:root {
+  --foundrix-hero-blue: #164bff;
+  --foundrix-deep-blue: #0d2fa6;
+  --foundrix-blue-navy: #081a54;
+  --foundrix-dark-blue-navy: #040f32;
+  --foundrix-navy: #020713;
+}
+
+.foundrix-hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--foundrix-navy, #020713);
+  overflow: hidden;
+}
+
+/* 100vh Camera Viewport */
+.foundrix-hero__viewport {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  overflow: visible;
+}
+
+/* Layer 0: Continuous Background Canvas
+   Begins at Hero navy, transitions into deep royal blue and terminates at the exact shared blue-navy (#081a54) */
+.foundrix-hero__background {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(22, 75, 255, 0.28) 0%, rgba(10, 40, 160, 0.12) 35%, transparent 68%),
+    radial-gradient(ellipse 90% 85% at 50% 50%, transparent 40%, rgba(2, 7, 19, 0.85) 100%),
+    linear-gradient(
+      to bottom,
+      #020713 0%,
+      #020713 45%,
+      #040f32 65%,
+      #061646 80%,
+      #081a54 94%,
+      #081a54 100%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Layer 1: Particles Canvas is handled by StardustCanvas with z-index: 1 */
+
+/* Layer 2: Giant Geometric Blue X & Perspective Runway
+   Controlled bottom mask gently dissolves the runway and blue wings to 0 opacity before section edge */
+.foundrix-hero__x-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  will-change: transform, opacity;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 55%,
+    rgba(0, 0, 0, 0.82) 68%,
+    rgba(0, 0, 0, 0.45) 80%,
+    rgba(0, 0, 0, 0.12) 90%,
+    transparent 97%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 55%,
+    rgba(0, 0, 0, 0.82) 68%,
+    rgba(0, 0, 0, 0.45) 80%,
+    rgba(0, 0, 0, 0.12) 90%,
+    transparent 97%
+  );
+}
+
+.foundrix-hero__x-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Layer 3: HUD Minimal Details */
+.foundrix-hero__hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Concentric Target Reticle to left of 9&10 */
+.foundrix-hero__reticle {
+  position: absolute;
+  left: 33%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.foundrix-hero__reticle-inner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 240, 255, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.foundrix-hero__reticle-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #00f0ff;
+  box-shadow: 0 0 8px #00f0ff;
+}
+
+/* Lower-Left Micro Detail */
+.foundrix-hero__built {
+  position: absolute;
+  left: 36px;
+  bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.35;
+  color: #1a42b8;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.foundrix-hero__built-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #00f0ff;
+  box-shadow: 0 0 10px #00f0ff;
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: heroDotPulse 2s infinite ease-in-out alternate;
+}
+
+@keyframes heroDotPulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Layer 10: Centered Content */
+.foundrix-hero__content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 1240px;
+  padding: 0 20px;
+  margin-top: 14px;
+}
+
+/* Association Pill */
+.foundrix-hero__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  background-color: rgba(4, 10, 24, 0.88);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 999px;
+  margin-bottom: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(0, 240, 255, 0.16);
+  max-width: 95vw;
+  flex-wrap: wrap;
+  justify-content: center;
+  user-select: none;
+}
+
+.foundrix-hero__pill-text {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: clamp(0.60rem, 1.3vw, 0.74rem);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.foundrix-hero__pill-sep {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.72rem;
+}
+
+.foundrix-hero__pill-cyan {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: clamp(0.60rem, 1.3vw, 0.74rem);
+  font-weight: 700;
+  color: #00f0ff;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* Monumental FOUNDRIX Title */
+.foundrix-hero__title {
+  font-family: var(--font-heading, 'Bebas Neue', 'Impact', sans-serif);
+  font-size: clamp(4.4rem, 11.2vw, 10.5rem);
+  font-weight: 900;
+  font-style: italic;
+  transform: skewX(-3.5deg);
+  line-height: 0.88;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  text-shadow:
+    0 2px 0 #123bb8,
+    0 4px 0 #0d2c94,
+    0 6px 0 #081d6d,
+    0 8px 1px #041042,
+    0 12px 24px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(22, 75, 255, 0.5);
+  user-select: none;
+}
+
+/* Subtitle */
+.foundrix-hero__subtitle {
+  font-family: var(--font-heading, 'Bebas Neue', 'Impact', sans-serif);
+  font-size: clamp(0.72rem, 1.8vw, 1.15rem);
+  font-weight: 700;
+  color: #00f0ff;
+  letter-spacing: clamp(0.18em, 0.5vw, 0.26em);
+  text-transform: uppercase;
+  margin-top: 4px;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+  user-select: none;
+}
+
+/* Date inside the Cream Runway */
+.foundrix-hero__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  user-select: none;
+}
+
+.foundrix-hero__date-num {
+  font-family: var(--font-heading, 'Bebas Neue', 'Impact', sans-serif);
+  font-size: clamp(2.6rem, 5.6vw, 4.4rem);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: #0a1c4a;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.foundrix-hero__date-month {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: clamp(0.85rem, 1.6vw, 1.25rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: #0a1c4a;
+  margin-top: 2px;
+}
+
+/* Dual Primary CTA Buttons */
+.foundrix-hero__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* REGISTER Pill Button */
+.foundrix-hero__btn-register {
+  border-radius: 999px;
+  padding: 11px 32px;
+  background-color: #070d18;
+  border: 1.5px solid rgba(0, 240, 255, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.22);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.foundrix-hero__btn-register:hover {
+  transform: translateY(-2px);
+  border-color: #00f0ff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85), 0 0 32px rgba(0, 240, 255, 0.45);
+}
+
+/* LOGIN Pill Button */
+.foundrix-hero__btn-login {
+  border-radius: 999px;
+  padding: 11px 28px;
+  background-color: #070d18;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: transform 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
+}
+
+.foundrix-hero__btn-login:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 240, 255, 0.5);
+  background-color: rgba(12, 20, 36, 0.95);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 240, 255, 0.18);
+}
+
+/* ==========================================================================
+   Desktop / Tablet Adaptations (>= 768px)
+   ========================================================================== */
+
+/* Tablet & Smaller Desktop Screens */
+@media (max-width: 1024px) {
+  .foundrix-hero__reticle {
+    left: 28%;
+    top: 48%;
+  }
+}
+
+/* Reduced Motion Mode */
+@media (prefers-reduced-motion: reduce) {
+  .foundrix-hero__built-dot {
+    animation: none !important;
+  }
+}

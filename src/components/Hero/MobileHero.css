@@ -1,0 +1,285 @@
+/* ==========================================================================
+   FOUNDRIX 2026 — Dedicated Mobile Hero Styles (<= 767px)
+   Organized around ONE Single Center Axis (50% Viewport Width)
+   Proportional typography, natural perspective, and seamless Events handoff
+   ========================================================================== */
+
+.foundrix-hero-mobile {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--foundrix-navy, #020713);
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Layer 0: Continuous Background Canvas terminating cleanly at shared #081a54 */
+.foundrix-hero-mobile__background {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(22, 75, 255, 0.32) 0%, rgba(10, 40, 160, 0.14) 45%, transparent 75%),
+    linear-gradient(
+      to bottom,
+      #020713 0%,
+      #020713 22%,
+      #040f32 45%,
+      #061646 68%,
+      #081a54 88%,
+      #081a54 100%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Bottom ambient glow mirroring Events top ambient glow across section boundary */
+.foundrix-hero-mobile__bottom-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 220px;
+  background: radial-gradient(ellipse 65% 80% at 50% 100%, rgba(22, 75, 255, 0.15) 0%, rgba(13, 47, 166, 0.06) 45%, transparent 80%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Layer 10: Centered Portrait Content Stack (Strict 50% Center Axis) */
+.foundrix-hero-mobile__viewport {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--nav-height, 76px) + 16px) 16px;
+  z-index: 10;
+}
+
+.foundrix-hero-mobile__content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  max-width: min(92vw, 420px);
+  margin-inline: auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+/* 1. Association Pill */
+.foundrix-hero-mobile__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background-color: rgba(4, 10, 24, 0.90);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 999px;
+  margin-bottom: 14px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(0, 240, 255, 0.14);
+  max-width: calc(100vw - 28px);
+  width: fit-content;
+  margin-inline: auto;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.foundrix-hero-mobile__pill-sparkle {
+  flex-shrink: 0;
+}
+
+.foundrix-hero-mobile__pill-body {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.foundrix-hero-mobile__pill-line1 {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: clamp(0.50rem, 2.2vw, 0.62rem);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.foundrix-hero-mobile__pill-sep {
+  color: #00f0ff;
+  font-size: 0.62rem;
+}
+
+.foundrix-hero-mobile__pill-line2 {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: clamp(0.50rem, 2.2vw, 0.62rem);
+  font-weight: 700;
+  color: #00f0ff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* 2. Dominant FOUNDRIX Title (Centered, Proportional, Skewed) */
+.foundrix-hero-mobile__title {
+  font-family: var(--font-heading, 'Bebas Neue', 'Impact', sans-serif);
+  font-size: clamp(3.2rem, 14vw, 4.3rem);
+  font-weight: 900;
+  font-style: italic;
+  transform: skewX(-3.5deg);
+  line-height: 0.88;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
+  margin-inline: auto;
+  text-shadow:
+    0 2px 0 #123bb8,
+    0 4px 0 #0d2c94,
+    0 6px 0 #081d6d,
+    0 10px 20px rgba(0, 0, 0, 0.85),
+    0 0 35px rgba(22, 75, 255, 0.5);
+  user-select: none;
+}
+
+/* 3. Subtitle */
+.foundrix-hero-mobile__subtitle {
+  font-family: var(--font-heading, 'Bebas Neue', 'Impact', sans-serif);
+  font-size: clamp(0.68rem, 2.6vw, 0.84rem);
+  font-weight: 700;
+  color: #00f0ff;
+  letter-spacing: clamp(0.12em, 0.5vw, 0.18em);
+  text-transform: uppercase;
+  margin-top: 8px;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+  user-select: none;
+  text-align: center;
+  margin-inline: auto;
+}
+
+/* 4. Date (9&10 October) */
+.foundrix-hero-mobile__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  user-select: none;
+  margin-inline: auto;
+}
+
+.foundrix-hero-mobile__date-num {
+  font-family: var(--font-heading, 'Bebas Neue', 'Impact', sans-serif);
+  font-size: clamp(2.0rem, 8vw, 2.7rem);
+  font-weight: 900;
+  line-height: 0.90;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  text-shadow:
+    0 2px 0 #123bb8,
+    0 4px 12px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(0, 240, 255, 0.45);
+}
+
+.foundrix-hero-mobile__date-month {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: clamp(0.72rem, 2.6vw, 0.88rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #00f0ff;
+  margin-top: 2px;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+/* 5. Dual Primary CTA Buttons */
+.foundrix-hero-mobile__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+  width: 100%;
+  max-width: 320px;
+  margin-inline: auto;
+}
+
+.foundrix-hero-mobile__btn-register {
+  flex: 1;
+  border-radius: 999px;
+  padding: 9px 18px;
+  background-color: #070d18;
+  border: 1.5px solid rgba(0, 240, 255, 0.45);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 240, 255, 0.18);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.foundrix-hero-mobile__btn-login {
+  flex: 1;
+  border-radius: 999px;
+  padding: 9px 18px;
+  background-color: #070d18;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: transform 0.2s ease;
+}
+
+/* Mobile Landscape Adaptations */
+@media (max-height: 520px) and (orientation: landscape) {
+  .foundrix-hero-mobile__viewport {
+    padding-top: calc(var(--nav-height, 56px) + 6px);
+  }
+  .foundrix-hero-mobile__title {
+    font-size: 2.8rem;
+  }
+  .foundrix-hero-mobile__date-num {
+    font-size: 1.8rem;
+  }
+}

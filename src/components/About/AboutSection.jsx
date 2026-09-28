@@ -17,38 +17,18 @@ export const AboutSection = () => {
       style={{
         position: 'relative',
         padding: '50px 0 90px 0',
-        backgroundColor: '#000000',
+        backgroundColor: '#020713',
         overflow: 'hidden',
       }}
     >
-      {/* =========================================================================
-          AURORA MESH BACKGROUND (Disabled for Simple White & Black theme)
-          To restore: uncomment this block
-          ========================================================================= */}
-      {/*
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: "url('/aurora-mesh-bg.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0.92,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-      */}
-
-      {/* Clean Subtle White Cyber Grid Overlay */}
+      {/* Subtle Royal Blue FOUNDRIX Cyber Grid Overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           backgroundImage: `
-            linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px)
+            linear-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px',
           opacity: 0.85,
@@ -57,12 +37,12 @@ export const AboutSection = () => {
         }}
       />
 
-      {/* Dark Vignette Overlay */}
+      {/* Dark Navy Vignette Overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(ellipse 90% 70% at 50% 50%, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.95) 100%)',
+          background: 'radial-gradient(ellipse 90% 70% at 50% 50%, rgba(2, 7, 19, 0.2) 0%, rgba(2, 7, 19, 0.95) 100%)',
           pointerEvents: 'none',
           zIndex: 1,
         }}
@@ -86,10 +66,10 @@ export const AboutSection = () => {
           transition={{ duration: 0.5 }}
           style={{
             borderRadius: '18px',
-            background: 'linear-gradient(180deg, rgba(8, 14, 28, 0.9) 0%, rgba(4, 7, 16, 0.96) 100%)',
-            border: '1.5px solid rgba(0, 240, 255, 0.35)',
+            background: 'linear-gradient(180deg, rgba(8, 16, 34, 0.92) 0%, rgba(4, 9, 22, 0.98) 100%)',
+            border: '1.5px solid rgba(37, 99, 235, 0.35)',
             padding: 'clamp(24px, 4vw, 40px)',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 240, 255, 0.12)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(22, 75, 255, 0.12)',
             backdropFilter: 'blur(20px)',
             position: 'relative',
             overflow: 'hidden',

@@ -72,54 +72,62 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
       style={{
         position: 'relative',
         zIndex: 10,
-        backgroundColor: '#000000',
-        padding: hideHeader ? '0 0 70px 0' : '24px 0 70px 0',
+        background: `
+          linear-gradient(
+            to bottom,
+            #081a54 0%,
+            #081a54 40px,
+            #061646 160px,
+            #040f32 280px,
+            #020713 420px,
+            #020713 100%
+          )
+        `,
+        padding: hideHeader ? '0 0 70px 0' : (isMobile ? '28px 0 70px 0' : '40px 0 70px 0'),
         marginTop: hideHeader ? (isMobile ? '-14vh' : '-22vh') : '0',
         overflow: 'hidden',
       }}
     >
-      {/* =========================================================================
-          AURORA MESH BACKGROUND (Disabled for Simple White & Black theme)
-          To restore: uncomment this block
-          ========================================================================= */}
-      {/*
+      {/* Top Ambient Glow continuing from Hero bottom into Events */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
-          backgroundImage: "url('/aurora-mesh-bg.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0.92,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-      */}
-
-      {/* Clean Subtle White Cyber Grid Overlay */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `
-            linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px',
-          opacity: 0.85,
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '420px',
+          background: 'radial-gradient(ellipse 65% 80% at 50% 0%, rgba(22, 75, 255, 0.15) 0%, rgba(13, 47, 166, 0.06) 45%, transparent 80%)',
           pointerEvents: 'none',
           zIndex: 1,
         }}
       />
 
-      {/* Deep Vignette Overlay */}
+      {/* Subtle Royal Blue FOUNDRIX Cyber Grid Overlay: masked to fade in gently without a hard top line */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(ellipse 90% 80% at 50% 50%, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.95) 100%)',
+          backgroundImage: `
+            linear-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+          opacity: 0.85,
+          maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 80px, rgba(0, 0, 0, 0.25) 180px, rgba(0, 0, 0, 0.75) 280px, black 380px)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 80px, rgba(0, 0, 0, 0.25) 180px, rgba(0, 0, 0, 0.75) 280px, black 380px)',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      {/* Deep Navy Vignette Overlay: masked at top to keep ambient illumination completely clean */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(ellipse 90% 70% at 50% 60%, transparent 20%, rgba(2, 7, 19, 0.55) 75%, #020713 100%)',
+          maskImage: 'linear-gradient(to bottom, transparent 0%, transparent 140px, black 280px)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, transparent 140px, black 280px)',
           pointerEvents: 'none',
           zIndex: 1,
         }}
@@ -132,8 +140,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
           100% { transform: scale(2.4); opacity: 0; }
         }
         @keyframes laserGlowPulse {
-          0%, 100% { filter: drop-shadow(0 0 6px #00f0ff) drop-shadow(0 0 14px rgba(0, 240, 255, 0.5)); }
-          50% { filter: drop-shadow(0 0 10px #00f0ff) drop-shadow(0 0 22px rgba(192, 132, 252, 0.7)); }
+          0%, 100% { filter: drop-shadow(0 0 6px #00f0ff) drop-shadow(0 0 14px rgba(22, 75, 255, 0.5)); }
+          50% { filter: drop-shadow(0 0 10px #2563eb) drop-shadow(0 0 20px rgba(37, 99, 235, 0.6)); }
         }
 
         /* Desktop Spine Layout */
@@ -180,8 +188,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
             right: -36px;
             width: 36px;
             height: 2px;
-            background: linear-gradient(90deg, rgba(0, 240, 255, 0.2), #00f0ff);
-            box-shadow: 0 0 8px #00f0ff;
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.2), #00f0ff);
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
             transform-origin: right center;
             z-index: 5;
           }
@@ -193,7 +201,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
             height: 12px;
             border-radius: 50%;
             background: #00f0ff;
-            box-shadow: 0 0 12px #00f0ff;
+            box-shadow: 0 0 10px #00f0ff;
           }
           .e-connector-right {
             position: absolute;
@@ -201,8 +209,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
             left: -36px;
             width: 36px;
             height: 2px;
-            background: linear-gradient(90deg, #c084fc, rgba(192, 132, 252, 0.2));
-            box-shadow: 0 0 8px #c084fc;
+            background: linear-gradient(90deg, #2563eb, rgba(37, 99, 235, 0.2));
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
             transform-origin: left center;
             z-index: 5;
           }
@@ -213,8 +221,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #c084fc;
-            box-shadow: 0 0 12px #c084fc;
+            background: #2563eb;
+            box-shadow: 0 0 12px #2563eb, 0 0 6px #00f0ff;
           }
         }
 
@@ -259,8 +267,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
             left: -22px;
             width: 22px;
             height: 2px;
-            background: #00f0ff;
-            box-shadow: 0 0 8px #00f0ff;
+            background: #2563eb;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
             transform-origin: left center;
             z-index: 5;
           }
@@ -309,11 +317,11 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '4px 14px',
+                padding: '5px 16px',
                 borderRadius: '999px',
-                background: 'linear-gradient(90deg, rgba(0, 240, 255, 0.12), rgba(192, 132, 252, 0.12))',
-                border: '1px solid rgba(0, 240, 255, 0.35)',
-                boxShadow: '0 0 16px rgba(0, 240, 255, 0.15)',
+                background: 'rgba(5, 12, 28, 0.88)',
+                border: '1px solid rgba(0, 240, 255, 0.32)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.6), 0 0 16px rgba(22, 75, 255, 0.18)',
                 marginBottom: '10px',
               }}
             >
@@ -323,12 +331,12 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.72rem',
                   fontWeight: '800',
-                  color: '#00f0ff',
+                  color: '#ffffff',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
                 }}
               >
-                2 FLAGSHIP TRACKS • 1 PASS
+                2 FLAGSHIP TRACKS • <span style={{ color: '#00f0ff' }}>1 PASS</span>
               </span>
             </div>
 
@@ -343,7 +351,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                 letterSpacing: '0.02em',
                 textTransform: 'uppercase',
                 margin: '0 0 8px 0',
-                textShadow: '0 4px 25px rgba(0, 0, 0, 0.9)',
+                textShadow: '0 2px 0 #0d2c94, 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 30px rgba(22, 75, 255, 0.3)',
               }}
             >
               THE 2 CORE PILLARS
@@ -351,7 +359,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
 
             <p
               style={{
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: 'rgba(240, 235, 225, 0.76)',
                 fontSize: '0.88rem',
                 maxWidth: '520px',
                 margin: '0 auto',
@@ -420,8 +428,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                 left: 0,
                 right: 0,
                 height: lineHeight,
-                background: 'linear-gradient(180deg, #00f0ff 0%, #2563eb 35%, #9333ea 70%, #c084fc 100%)',
-                boxShadow: '0 0 10px #00f0ff, 0 0 20px rgba(192, 132, 252, 0.6)',
+                background: 'linear-gradient(180deg, #00f0ff 0%, #2563eb 45%, #164bff 75%, #00f0ff 100%)',
+                boxShadow: '0 0 10px #00f0ff, 0 0 20px rgba(37, 99, 235, 0.6)',
                 animation: 'laserGlowPulse 4s infinite ease-in-out',
               }}
             />
@@ -438,7 +446,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                 height: '12px',
                 borderRadius: '50%',
                 background: '#ffffff',
-                boxShadow: '0 0 12px #00f0ff, 0 0 24px #ffffff, 0 0 35px rgba(0, 240, 255, 0.8)',
+                boxShadow: '0 0 12px #00f0ff, 0 0 24px #ffffff, 0 0 35px rgba(37, 99, 235, 0.8)',
                 zIndex: 8,
               }}
             />
@@ -466,13 +474,13 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                   opacity: isMobile ? 1 : leftCardOpacity,
                   x: isMobile ? 0 : leftCardX,
                   borderRadius: '16px',
-                  background: 'linear-gradient(180deg, rgba(8, 14, 28, 0.88) 0%, rgba(4, 7, 16, 0.96) 100%)',
-                  border: '1.5px solid rgba(0, 240, 255, 0.38)',
+                  background: 'linear-gradient(180deg, rgba(8, 16, 34, 0.92) 0%, rgba(4, 9, 22, 0.98) 100%)',
+                  border: '1.5px solid rgba(37, 99, 235, 0.38)',
                   padding: '20px 18px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 240, 255, 0.15)',
+                  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.85), 0 0 25px rgba(22, 75, 255, 0.12)',
                   position: 'relative',
                   overflow: 'hidden',
                   backdropFilter: 'blur(20px)',
@@ -489,7 +497,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                     left: 0,
                     right: 0,
                     height: '2px',
-                    background: 'linear-gradient(90deg, transparent, #00f0ff, transparent)',
+                    background: 'linear-gradient(90deg, transparent, #2563eb, #00f0ff, transparent)',
                   }}
                 />
 
@@ -512,8 +520,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                         textTransform: 'uppercase',
                         padding: '3px 9px',
                         borderRadius: '999px',
-                        background: 'rgba(0, 240, 255, 0.12)',
-                        border: '1px solid rgba(0, 240, 255, 0.35)',
+                        background: 'rgba(37, 99, 235, 0.15)',
+                        border: '1px solid rgba(0, 240, 255, 0.3)',
                       }}
                     >
                       TRACK 01 • VIRTUAL
@@ -523,8 +531,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                         width: '32px',
                         height: '32px',
                         borderRadius: '8px',
-                        backgroundColor: 'rgba(0, 240, 255, 0.12)',
-                        border: '1px solid rgba(0, 240, 255, 0.35)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.16)',
+                        border: '1px solid rgba(0, 240, 255, 0.3)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -552,7 +560,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
 
                   <p
                     style={{
-                      color: 'rgba(255, 255, 255, 0.68)',
+                      color: 'rgba(235, 240, 255, 0.72)',
                       fontSize: '0.82rem',
                       lineHeight: '1.4',
                       marginBottom: '14px',
@@ -569,8 +577,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                       gap: '8px',
                       padding: '8px 12px',
                       borderRadius: '10px',
-                      backgroundColor: 'rgba(0, 240, 255, 0.08)',
-                      border: '1px solid rgba(0, 240, 255, 0.25)',
+                      backgroundColor: 'rgba(10, 20, 44, 0.85)',
+                      border: '1px solid rgba(37, 99, 235, 0.32)',
                       marginBottom: '14px',
                     }}
                   >
@@ -580,7 +588,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.74rem',
                         fontWeight: '800',
-                        color: '#00f0ff',
+                        color: '#ffffff',
                         letterSpacing: '0.04em',
                       }}
                     >
@@ -591,14 +599,14 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                   {/* Short Perks */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CheckCircle2 size={13} color="#00f0ff" />
-                      <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+                      <CheckCircle2 size={13} color="#2563eb" />
+                      <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.85)' }}>
                         Hardware & Software Tracks
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CheckCircle2 size={13} color="#00f0ff" />
-                      <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+                      <CheckCircle2 size={13} color="#2563eb" />
+                      <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.85)' }}>
                         Verified E-Cell IIT Bombay Certificate
                       </span>
                     </div>
@@ -615,8 +623,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                     width: '100%',
                     padding: '9px 14px',
                     borderRadius: '10px',
-                    backgroundColor: 'rgba(0, 240, 255, 0.12)',
-                    border: '1px solid rgba(0, 240, 255, 0.45)',
+                    backgroundColor: '#071020',
+                    border: '1.5px solid rgba(0, 240, 255, 0.35)',
                     color: '#ffffff',
                     fontSize: '0.78rem',
                     fontWeight: '800',
@@ -628,19 +636,22 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '6px',
-                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                    transition: 'all 0.22s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#00f0ff';
-                    e.currentTarget.style.color = '#040714';
+                    e.currentTarget.style.backgroundColor = '#164bff';
+                    e.currentTarget.style.borderColor = '#00f0ff';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(22, 75, 255, 0.45)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(0, 240, 255, 0.12)';
-                    e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.backgroundColor = '#071020';
+                    e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.35)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.5)';
                   }}
                 >
                   <span>VIEW DETAILS</span>
-                  <ArrowRight size={13} />
+                  <ArrowRight size={13} color="#00f0ff" />
                 </button>
               </motion.div>
             </div>
@@ -663,13 +674,13 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                   opacity: isMobile ? 1 : rightCardOpacity,
                   x: isMobile ? 0 : rightCardX,
                   borderRadius: '16px',
-                  background: 'linear-gradient(180deg, rgba(14, 10, 26, 0.88) 0%, rgba(8, 5, 18, 0.96) 100%)',
-                  border: '1.5px solid rgba(192, 132, 252, 0.38)',
+                  background: 'linear-gradient(180deg, rgba(8, 16, 34, 0.92) 0%, rgba(4, 9, 22, 0.98) 100%)',
+                  border: '1.5px solid rgba(37, 99, 235, 0.38)',
                   padding: '20px 18px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.85), 0 0 25px rgba(192, 132, 252, 0.15)',
+                  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.85), 0 0 25px rgba(22, 75, 255, 0.12)',
                   position: 'relative',
                   overflow: 'hidden',
                   backdropFilter: 'blur(20px)',
@@ -686,7 +697,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                     left: 0,
                     right: 0,
                     height: '2px',
-                    background: 'linear-gradient(90deg, transparent, #c084fc, transparent)',
+                    background: 'linear-gradient(90deg, transparent, #164bff, #2563eb, transparent)',
                   }}
                 />
 
@@ -704,13 +715,13 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.66rem',
                         fontWeight: '800',
-                        color: '#c084fc',
+                        color: '#60a5fa',
                         letterSpacing: '0.1em',
                         textTransform: 'uppercase',
                         padding: '3px 9px',
                         borderRadius: '999px',
-                        background: 'rgba(192, 132, 252, 0.12)',
-                        border: '1px solid rgba(192, 132, 252, 0.35)',
+                        background: 'rgba(37, 99, 235, 0.15)',
+                        border: '1px solid rgba(37, 99, 235, 0.35)',
                       }}
                     >
                       TRACK 02 • IN-PERSON
@@ -720,12 +731,12 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                         width: '32px',
                         height: '32px',
                         borderRadius: '8px',
-                        backgroundColor: 'rgba(192, 132, 252, 0.12)',
-                        border: '1px solid rgba(192, 132, 252, 0.35)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.16)',
+                        border: '1px solid rgba(37, 99, 235, 0.35)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#c084fc',
+                        color: '#60a5fa',
                       }}
                     >
                       <Lightbulb size={16} />
@@ -749,7 +760,7 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
 
                   <p
                     style={{
-                      color: 'rgba(255, 255, 255, 0.68)',
+                      color: 'rgba(235, 240, 255, 0.72)',
                       fontSize: '0.82rem',
                       lineHeight: '1.4',
                       marginBottom: '14px',
@@ -766,18 +777,18 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                       gap: '8px',
                       padding: '8px 12px',
                       borderRadius: '10px',
-                      backgroundColor: 'rgba(192, 132, 252, 0.08)',
-                      border: '1px solid rgba(192, 132, 252, 0.25)',
+                      backgroundColor: 'rgba(10, 20, 44, 0.85)',
+                      border: '1px solid rgba(37, 99, 235, 0.32)',
                       marginBottom: '14px',
                     }}
                   >
-                    <Sparkles size={14} color="#c084fc" />
+                    <Sparkles size={14} color="#60a5fa" />
                     <span
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.74rem',
                         fontWeight: '800',
-                        color: '#c084fc',
+                        color: '#ffffff',
                         letterSpacing: '0.04em',
                       }}
                     >
@@ -788,14 +799,14 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                   {/* Short Perks */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CheckCircle2 size={13} color="#c084fc" />
-                      <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+                      <CheckCircle2 size={13} color="#2563eb" />
+                      <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.85)' }}>
                         Hands-on Pitch & Architecture Toolkits
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CheckCircle2 size={13} color="#c084fc" />
-                      <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+                      <CheckCircle2 size={13} color="#2563eb" />
+                      <span style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.85)' }}>
                         Dual Certification: REC & E-Cell IIT Bombay
                       </span>
                     </div>
@@ -812,8 +823,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                     width: '100%',
                     padding: '9px 14px',
                     borderRadius: '10px',
-                    backgroundColor: 'rgba(192, 132, 252, 0.12)',
-                    border: '1px solid rgba(192, 132, 252, 0.45)',
+                    backgroundColor: '#071020',
+                    border: '1.5px solid rgba(37, 99, 235, 0.45)',
                     color: '#ffffff',
                     fontSize: '0.78rem',
                     fontWeight: '800',
@@ -825,19 +836,22 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '6px',
-                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                    transition: 'all 0.22s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#c084fc';
-                    e.currentTarget.style.color = '#040714';
+                    e.currentTarget.style.backgroundColor = '#164bff';
+                    e.currentTarget.style.borderColor = '#60a5fa';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(22, 75, 255, 0.45)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(192, 132, 252, 0.12)';
-                    e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.backgroundColor = '#071020';
+                    e.currentTarget.style.borderColor = 'rgba(37, 99, 235, 0.45)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.5)';
                   }}
                 >
                   <span>VIEW DETAILS</span>
-                  <ArrowRight size={13} />
+                  <ArrowRight size={13} color="#60a5fa" />
                 </button>
               </motion.div>
             </div>
@@ -862,8 +876,8 @@ export const EventsSection = ({ onRegisterClick, onOpenHackathonHub, hideHeader 
                 width: '16px',
                 height: '16px',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, #ffffff, #00f0ff)',
-                boxShadow: '0 0 16px #00f0ff, 0 0 32px #00f0ff',
+                background: 'radial-gradient(circle, #ffffff, #2563eb)',
+                boxShadow: '0 0 16px #2563eb, 0 0 32px rgba(0, 240, 255, 0.6)',
               }}
             />
           </div>
